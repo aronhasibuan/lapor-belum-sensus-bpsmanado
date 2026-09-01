@@ -1,0 +1,16 @@
+# 1. Matikan Directory Browsing (Mencegah folder diintip publik)
+Options -Indexes
+
+# 2. Paksa Koneksi Aman HTTPS / SSL (Wajib untuk Geolocation GPS)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# 3. Lindungi Folder Sensitif
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(sql|env|log|md|xlsx|xls)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
