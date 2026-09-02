@@ -14,11 +14,11 @@ if (!isset($base_path)) {
         <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
             <img src="<?= $base_path; ?>assets/img/logo-bps-manado.png"
                 alt="Logo BPS Kota Manado"
-                style="height: 26px; width: auto; object-fit: contain;">
-            <span style="width:1px; height:20px; background-color:#dee2e6;"></span>
+                style="height: 38px; width: auto; object-fit: contain;">
+            <span style="width:1px; height:28px; background-color:#dee2e6;"></span>
             <img src="<?= $base_path; ?>assets/img/logo-se2026.png"
                 alt="Logo Sensus Ekonomi 2026"
-                style="height: 24px; width: auto; object-fit: contain;">
+                style="height: 38px; width: auto; object-fit: contain;">
         </div>
         <p class="text-muted small mb-0">
             &copy; <?= date('Y'); ?> Sistem Informasi Pelaporan Belum Sensus Ekonomi. Hak Cipta Dilindungi.

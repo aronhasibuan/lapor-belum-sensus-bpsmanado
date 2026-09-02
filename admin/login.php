@@ -22,11 +22,11 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="mb-4 d-flex align-items-center justify-content-center gap-3">
                 <img src="../assets/img/logo-bps-manado.png"
                     alt="Logo BPS Kota Manado"
-                    style="height: 34px; width: auto; object-fit: contain;">
-                <span style="width:1px; height:28px; background-color:#dee2e6;"></span>
+                    style="height: 46px; width: auto; object-fit: contain;">
+                <span style="width:1px; height:34px; background-color:#dee2e6;"></span>
                 <img src="../assets/img/logo-se2026.png"
                     alt="Logo Sensus Ekonomi 2026"
-                    style="height: 32px; width: auto; object-fit: contain;">
+                    style="height: 46px; width: auto; object-fit: contain;">
             </div>
             <h5 class="fw-bold text-dark mb-1">Masuk Panel Admin</h5>
             <p class="text-muted small mb-0">Sistem Pelaporan Belum Sensus</p>

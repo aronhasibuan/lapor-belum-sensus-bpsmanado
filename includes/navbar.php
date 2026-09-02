@@ -11,12 +11,12 @@ $admin_nama = $_SESSION['admin_nama'] ?? 'Petugas Admin';
         <a class="navbar-brand d-flex align-items-center gap-3 py-1 text-decoration-none" href="dashboard.php">
             <img src="../assets/img/logo-bps-manado-white.png"
                 alt="Logo BPS Kota Manado"
-                style="height: 32px; width: auto; object-fit: contain; display: block;">
-            <span style="width:1px; height:26px; background-color:rgba(255,255,255,.35);"></span>
+                style="height: 42px; width: auto; object-fit: contain; display: block;">
+            <span style="width:1px; height:32px; background-color:rgba(255,255,255,.35);"></span>
             <img src="../assets/img/logo-se2026.png"
                 alt="Logo Sensus Ekonomi 2026"
                 class="d-none d-sm-block"
-                style="height: 28px; width: auto; object-fit: contain; display: block;">
+                style="height: 42px; width: auto; object-fit: contain; display: block;">
         </a>
 
         <!-- Tombol Toggle Mobile -->

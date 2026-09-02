@@ -48,16 +48,17 @@ $base_path   = $is_in_admin ? '../' : './';
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
         }
 
-        /* --- Lockup logo instansi + logo kegiatan --- */
-        .bps-logo-img {
-            height: 38px;
-            width: auto;
-            object-fit: contain;
-            display: block;
+        /* --- Lockup logo instansi + logo kegiatan ---
+           Tinggi kedua logo SENGAJA dibuat sama persis lewat satu variabel,
+           supaya logo BPS dan logo Sensus Ekonomi tampil setara.
+           Untuk mengubah ukuran, cukup ganti nilai --bps-logo-h di bawah. */
+        :root {
+            --bps-logo-h: 60px;
         }
 
+        .bps-logo-img,
         .bps-logo-se {
-            height: 34px;
+            height: var(--bps-logo-h);
             width: auto;
             object-fit: contain;
             display: block;
@@ -66,22 +67,22 @@ $base_path   = $is_in_admin ? '../' : './';
         /* Garis pemisah tipis antara logo instansi dan logo kegiatan */
         .bps-logo-divider {
             width: 1px;
-            height: 30px;
+            height: calc(var(--bps-logo-h) * 0.72);
             background-color: #dee2e6;
             flex: 0 0 auto;
         }
 
+        /* Tablet */
+        @media (max-width: 991.98px) {
+            :root {
+                --bps-logo-h: 48px;
+            }
+        }
+
+        /* Ponsel: dikecilkan supaya kedua logo tetap muat sebaris */
         @media (max-width: 575.98px) {
-            .bps-logo-img {
-                height: 28px;
-            }
-
-            .bps-logo-se {
-                height: 26px;
-            }
-
-            .bps-logo-divider {
-                height: 22px;
+            :root {
+                --bps-logo-h: 36px;
             }
         }
 
@@ -158,7 +159,7 @@ $base_path   = $is_in_admin ? '../' : './';
 
     <?php if (!$is_in_admin): ?>
         <!-- Header Putih Hanya Muncul di Formulir Warga -->
-        <header class="bps-top-header py-2">
+        <header class="bps-top-header py-3">
             <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between gap-3">
                 <!-- Lockup co-branding: logo instansi + logo kegiatan, sejajar dan
                      dipisah garis tipis. Kedua logo hanya tampil sekali di halaman. -->
