@@ -3,7 +3,33 @@
 // Konfigurasi koneksi database PDO
 
 // Deteksi environment (Localhost vs Live Hosting)
-$is_localhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1', '::1']);
+$host_candidates = [
+    $_SERVER['HTTP_HOST'] ?? '',
+    $_SERVER['SERVER_NAME'] ?? '',
+    $_SERVER['REQUEST_URI'] ?? '',
+];
+
+$is_localhost = false;
+foreach ($host_candidates as $candidate) {
+    $host = strtolower(trim((string) $candidate));
+    $host = preg_replace('#^https?://#i', '', $host);
+    $host = preg_replace('#/.*$#', '', $host);
+
+    if ($host === '' || $host === 'localhost' || $host === '127.0.0.1' || $host === '::1') {
+        $is_localhost = true;
+        break;
+    }
+
+    if (str_contains($host, 'localhost') || str_contains($host, '127.0.0.1') || str_contains($host, '::1')) {
+        $is_localhost = true;
+        break;
+    }
+
+    if (str_ends_with($host, '.test') || str_ends_with($host, '.local') || str_ends_with($host, '.localhost')) {
+        $is_localhost = true;
+        break;
+    }
+}
 
 if ($is_localhost) {
     // Pengaturan Database Lokal (XAMPP / Laragon)
@@ -26,10 +52,10 @@ try {
         PDO::ATTR_EMULATE_PREPARES   => false,
     ]);
 } catch (PDOException $e) {
-    // Jangan tampilkan pesan detail database ke pengunjung umum jika di hosting
+    // Tampilkan detail di lokal agar debugging lebih cepat
     if ($is_localhost) {
         die("Koneksi Database Gagal: " . $e->getMessage());
-    } else {
-        die("Terjadi gangguan koneksi ke server basis data. Silakan coba beberapa saat lagi.");
     }
+
+    die("Terjadi gangguan koneksi ke server basis data. Silakan coba beberapa saat lagi.");
 }

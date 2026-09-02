@@ -829,6 +829,20 @@ INSERT INTO `tbl_laporan` (`id`, `nama_pelapor`, `no_telepon`, `kecamatan`, `kel
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_hasil_kunjungan`
+--
+
+CREATE TABLE `tbl_hasil_kunjungan` (
+  `id` int UNSIGNED NOT NULL,
+  `laporan_id` int UNSIGNED NOT NULL,
+  `nama_lengkap_petugas` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `catatan_keterangan` text COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_pml`
 --
 
@@ -1743,6 +1757,13 @@ ALTER TABLE `tbl_laporan`
   ADD KEY `idx_laporan_wilayah` (`kecamatan`,`kelurahan`,`nomor_lingkungan`);
 
 --
+-- Indexes for table `tbl_hasil_kunjungan`
+--
+ALTER TABLE `tbl_hasil_kunjungan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_hasil_kunjungan_laporan` (`laporan_id`);
+
+--
 -- Indexes for table `tbl_pml`
 --
 ALTER TABLE `tbl_pml`
@@ -1793,6 +1814,12 @@ ALTER TABLE `tbl_laporan`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `tbl_hasil_kunjungan`
+--
+ALTER TABLE `tbl_hasil_kunjungan`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tbl_pml`
 --
 ALTER TABLE `tbl_pml`
@@ -1820,6 +1847,12 @@ ALTER TABLE `tbl_wilayah`
 ALTER TABLE `tbl_alokasi_wilayah`
   ADD CONSTRAINT `fk_alokasi_ppl` FOREIGN KEY (`ppl_id`) REFERENCES `tbl_ppl` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_alokasi_wilayah` FOREIGN KEY (`wilayah_id`) REFERENCES `tbl_wilayah` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tbl_hasil_kunjungan`
+--
+ALTER TABLE `tbl_hasil_kunjungan`
+  ADD CONSTRAINT `fk_hasil_kunjungan_laporan` FOREIGN KEY (`laporan_id`) REFERENCES `tbl_laporan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tbl_ppl`
