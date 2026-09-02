@@ -16,17 +16,20 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
     <div class="card card-custom p-4 p-md-5" style="max-width: 420px; width: 100%;">
-        
+
         <!-- Header Kartu Login dengan Logo BPS -->
         <div class="text-center mb-4">
-            <div class="mb-3">
-                <img src="../assets/img/logo-bps.png" 
-                     alt="Logo BPS" 
-                     style="height: 60px; width: auto; object-fit: contain;" 
-                     onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/28/Badan_Pusat_Statistik.png'">
+            <div class="mb-4 d-flex align-items-center justify-content-center gap-3">
+                <img src="../assets/img/logo-bps-manado.png"
+                    alt="Logo BPS Kota Manado"
+                    style="height: 34px; width: auto; object-fit: contain;">
+                <span style="width:1px; height:28px; background-color:#dee2e6;"></span>
+                <img src="../assets/img/logo-se2026.png"
+                    alt="Logo Sensus Ekonomi 2026"
+                    style="height: 32px; width: auto; object-fit: contain;">
             </div>
             <h5 class="fw-bold text-dark mb-1">Masuk Panel Admin</h5>
-            <p class="text-muted small">BPS Kota Manado - Sensus Penduduk</p>
+            <p class="text-muted small mb-0">Sistem Pelaporan Belum Sensus</p>
         </div>
 
         <!-- Notifikasi Error Login -->
@@ -80,19 +83,19 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-// Fitur Tampilkan/Sembunyikan Password
-document.getElementById('togglePassword').addEventListener('click', function() {
-    const pwdInput = document.getElementById('password');
-    const eyeIcon = document.getElementById('eyeIcon');
-    
-    if (pwdInput.type === 'password') {
-        pwdInput.type = 'text';
-        eyeIcon.classList.replace('bi-eye', 'bi-eye-slash');
-    } else {
-        pwdInput.type = 'password';
-        eyeIcon.classList.replace('bi-eye-slash', 'bi-eye');
-    }
-});
+    // Fitur Tampilkan/Sembunyikan Password
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const pwdInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (pwdInput.type === 'password') {
+            pwdInput.type = 'text';
+            eyeIcon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            pwdInput.type = 'password';
+            eyeIcon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    });
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

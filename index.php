@@ -12,17 +12,16 @@ require_once __DIR__ . '/includes/header.php';
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
 
+            <!-- Logo tidak diulang di sini: sudah tampil pada header atas.
+                 Judul dibiarkan berdiri sendiri agar fokus ke formulir. -->
             <div class="text-center mb-4">
-                <!-- Logo Lokal di Form -->
-                <div class="mb-3">
-                    <img src="assets/img/logo-bps.png"
-                        alt="Logo BPS"
-                        style="height: 60px; width: auto;"
-                        class="mb-2">
-                    <h6 class="fw-bold text-secondary tracking-wide mb-0">BPS KOTA MANADO</h6>
-                </div>
-                <h3 class="fw-bold text-dark">Pelaporan Sensus Mandiri</h3>
-                <p class="text-muted small">Laporkan data jika tempat tinggal atau usaha Anda belum terdata oleh petugas sensus lapangan.</p>
+                <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 mb-3 fw-semibold">
+                    Sensus Ekonomi 2026
+                </span>
+                <h3 class="fw-bold text-dark mb-2">Pelaporan Belum Didata Sensus Ekonomi</h3>
+                <p class="text-muted small mb-0 mx-auto" style="max-width: 34rem;">
+                    Laporkan data jika tempat tinggal atau usaha Anda belum terdata oleh petugas sensus lapangan.
+                </p>
             </div>
 
             <!-- Notifikasi Pesan -->
@@ -107,7 +106,7 @@ require_once __DIR__ . '/includes/header.php';
                                 min="<?= date('Y-m-d'); ?>"
                                 max="2026-09-12">
                             <small class="text-danger d-block mt-1" style="font-size: 0.75rem;">
-                                <i class="bi bi-info-circle me-1"></i><em>*Catatan: Pelaporan sensus mandiri hanya dapat dijadwalkan hingga tanggal 13 September 2026.</em>
+                                <i class="bi bi-info-circle me-1"></i><em>*Catatan: Pelaporan belum didata Sensus Ekonomi hanya dapat dijadwalkan hingga tanggal 12 September 2026.</em>
                             </small>
                         </div>
                         <div class="col-md-6">

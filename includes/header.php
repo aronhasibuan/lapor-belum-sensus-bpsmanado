@@ -12,23 +12,24 @@ $base_path   = $is_in_admin ? '../' : './';
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($page_title); ?></title>
-    
+
     <!-- Favicon Logo BPS -->
-    <link rel="icon" type="image/png" href="<?= $base_path; ?>assets/img/logo-bps.png">
+    <link rel="icon" type="image/png" href="<?= $base_path; ?>assets/img/logo-se2026.png">
 
     <!-- Google Fonts: Inter (Termasuk bobot 300 untuk teks tipis) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet">
-    
+
     <!-- Bootstrap 5.3 CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <!-- Leaflet.js CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -47,10 +48,41 @@ $base_path   = $is_in_admin ? '../' : './';
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
         }
 
+        /* --- Lockup logo instansi + logo kegiatan --- */
         .bps-logo-img {
-            height: 42px;
+            height: 38px;
             width: auto;
             object-fit: contain;
+            display: block;
+        }
+
+        .bps-logo-se {
+            height: 34px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Garis pemisah tipis antara logo instansi dan logo kegiatan */
+        .bps-logo-divider {
+            width: 1px;
+            height: 30px;
+            background-color: #dee2e6;
+            flex: 0 0 auto;
+        }
+
+        @media (max-width: 575.98px) {
+            .bps-logo-img {
+                height: 28px;
+            }
+
+            .bps-logo-se {
+                height: 26px;
+            }
+
+            .bps-logo-divider {
+                height: 22px;
+            }
         }
 
         .bps-brand-main {
@@ -83,9 +115,26 @@ $base_path   = $is_in_admin ? '../' : './';
             font-size: 0.9rem !important;
         }
 
-        input::-webkit-input-placeholder { font-style: italic !important; font-weight: 300 !important; color: #94a3b8 !important; font-size: 0.9rem !important; }
-        input::-moz-placeholder { font-style: italic !important; font-weight: 300 !important; color: #94a3b8 !important; font-size: 0.9rem !important; }
-        input:-ms-input-placeholder { font-style: italic !important; font-weight: 300 !important; color: #94a3b8 !important; font-size: 0.9rem !important; }
+        input::-webkit-input-placeholder {
+            font-style: italic !important;
+            font-weight: 300 !important;
+            color: #94a3b8 !important;
+            font-size: 0.9rem !important;
+        }
+
+        input::-moz-placeholder {
+            font-style: italic !important;
+            font-weight: 300 !important;
+            color: #94a3b8 !important;
+            font-size: 0.9rem !important;
+        }
+
+        input:-ms-input-placeholder {
+            font-style: italic !important;
+            font-weight: 300 !important;
+            color: #94a3b8 !important;
+            font-size: 0.9rem !important;
+        }
 
         /* Opsi Dropdown Awal */
         select option[value=""] {
@@ -94,7 +143,8 @@ $base_path   = $is_in_admin ? '../' : './';
         }
 
         /* Tinggi Container Peta */
-        #map, #adminMap {
+        #map,
+        #adminMap {
             height: 350px !important;
             width: 100% !important;
             border-radius: 10px;
@@ -103,27 +153,30 @@ $base_path   = $is_in_admin ? '../' : './';
         }
     </style>
 </head>
+
 <body>
 
-<?php if (!$is_in_admin): ?>
-<!-- Header Putih Hanya Muncul di Formulir Warga -->
-<header class="bps-top-header py-2">
-    <div class="container-fluid px-4 d-flex align-items-center justify-content-between">
-        <a href="<?= $base_path; ?>index.php" class="text-decoration-none d-flex align-items-center gap-3">
-            <img src="<?= $base_path; ?>assets/img/logo-bps.png" 
-                 alt="Logo BPS" 
-                 class="bps-logo-img"
-                 onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/2/28/Badan_Pusat_Statistik.png'">
-            <div class="d-flex flex-column" style="line-height: 1.15;">
-                <span class="bps-brand-main">BADAN PUSAT STATISTIK</span>
-                <span class="bps-brand-sub">KOTA MANADO</span>
+    <?php if (!$is_in_admin): ?>
+        <!-- Header Putih Hanya Muncul di Formulir Warga -->
+        <header class="bps-top-header py-2">
+            <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between gap-3">
+                <!-- Lockup co-branding: logo instansi + logo kegiatan, sejajar dan
+                     dipisah garis tipis. Kedua logo hanya tampil sekali di halaman. -->
+                <a href="<?= $base_path; ?>index.php"
+                    class="text-decoration-none d-flex align-items-center gap-2 gap-md-3">
+                    <img src="<?= $base_path; ?>assets/img/logo-bps-manado.png"
+                        alt="Logo BPS Kota Manado"
+                        class="bps-logo-img">
+                    <span class="bps-logo-divider"></span>
+                    <img src="<?= $base_path; ?>assets/img/logo-se2026.png"
+                        alt="Logo Sensus Ekonomi 2026"
+                        class="bps-logo-se">
+                </a>
+                <div class="d-none d-lg-block">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-semibold">
+                        <i class="bi bi-shield-check me-1"></i> Layanan Sensus Mandiri
+                    </span>
+                </div>
             </div>
-        </a>
-        <div class="d-none d-md-block">
-            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-semibold">
-                <i class="bi bi-shield-check me-1"></i> Layanan Sensus Mandiri
-            </span>
-        </div>
-    </div>
-</header>
-<?php endif; ?>
+        </header>
+    <?php endif; ?>

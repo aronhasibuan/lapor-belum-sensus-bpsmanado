@@ -55,13 +55,16 @@ $laporanList = $laporanStmt->fetchAll();
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
+            <!-- Logo tidak diulang di sini: sudah tampil pada header atas.
+                 Teks "BPS KOTA MANADO" juga dihapus karena sudah tertulis di logo. -->
             <div class="text-center mb-4">
-                <div class="mb-3">
-                    <img src="assets/img/logo-bps.png" alt="Logo BPS" style="height: 60px; width: auto;" class="mb-2">
-                    <h6 class="fw-bold text-secondary tracking-wide mb-0">BPS KOTA MANADO</h6>
-                </div>
-                <h3 class="fw-bold text-dark">Laporan Follow Up Masyarakat Belum Didata</h3>
-                <p class="text-muted small mb-0">Catat hasil kunjungan dan pendataan terhadap masyarakat yang masih berstatus belum ditindaklanjuti.</p>
+                <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 mb-3 fw-semibold">
+                    Tindak Lanjut Petugas
+                </span>
+                <h3 class="fw-bold text-dark mb-2">Laporan Follow Up Masyarakat Belum Didata</h3>
+                <p class="text-muted small mb-0 mx-auto" style="max-width: 36rem;">
+                    Catat hasil kunjungan dan pendataan terhadap masyarakat yang masih berstatus belum ditindaklanjuti.
+                </p>
             </div>
 
             <?php if (isset($_SESSION['petugas_success'])): ?>
