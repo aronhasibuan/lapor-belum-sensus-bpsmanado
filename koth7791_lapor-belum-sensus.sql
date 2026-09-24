@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 01, 2026 at 07:30 AM
--- Server version: 8.0.30
--- PHP Version: 8.5.10
+-- Waktu pembuatan: 24 Sep 2026 pada 22.11
+-- Versi server: 11.4.13-MariaDB-cll-lve
+-- Versi PHP: 8.4.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,25 +18,25 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `koth7791_lapor-belum-sensus`
+-- Basis data: `koth7791_lapor-belum-sensus`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_admin`
+-- Struktur dari tabel `tbl_admin`
 --
 
 CREATE TABLE `tbl_admin` (
-  `id` int UNSIGNED NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `nama_lengkap` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `id` int(10) UNSIGNED NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `nama_lengkap` varchar(100) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_admin`
+-- Dumping data untuk tabel `tbl_admin`
 --
 
 INSERT INTO `tbl_admin` (`id`, `username`, `password`, `nama_lengkap`, `created_at`) VALUES
@@ -45,17 +45,17 @@ INSERT INTO `tbl_admin` (`id`, `username`, `password`, `nama_lengkap`, `created_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_alokasi_wilayah`
+-- Struktur dari tabel `tbl_alokasi_wilayah`
 --
 
 CREATE TABLE `tbl_alokasi_wilayah` (
-  `id` int UNSIGNED NOT NULL,
-  `wilayah_id` int UNSIGNED NOT NULL,
-  `ppl_id` int UNSIGNED NOT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `wilayah_id` int(10) UNSIGNED NOT NULL,
+  `ppl_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_alokasi_wilayah`
+-- Dumping data untuk tabel `tbl_alokasi_wilayah`
 --
 
 INSERT INTO `tbl_alokasi_wilayah` (`id`, `wilayah_id`, `ppl_id`) VALUES
@@ -772,17 +772,796 @@ INSERT INTO `tbl_alokasi_wilayah` (`id`, `wilayah_id`, `ppl_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_koseka`
+-- Struktur dari tabel `tbl_alokasi_wilayah_sensus`
 --
 
-CREATE TABLE `tbl_koseka` (
-  `id` int UNSIGNED NOT NULL,
-  `nama_koseka` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_hp_koseka` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL
+CREATE TABLE `tbl_alokasi_wilayah_sensus` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `wilayah_id` int(10) UNSIGNED NOT NULL,
+  `ppl_id` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data untuk tabel `tbl_alokasi_wilayah_sensus`
+--
+
+INSERT INTO `tbl_alokasi_wilayah_sensus` (`id`, `wilayah_id`, `ppl_id`) VALUES
+(1, 1, 260),
+(2, 1, 261),
+(3, 2, 261),
+(4, 2, 262),
+(5, 2, 263),
+(6, 3, 262),
+(7, 4, 262),
+(8, 4, 263),
+(9, 5, 263),
+(10, 5, 264),
+(11, 5, 266),
+(12, 6, 264),
+(13, 6, 265),
+(14, 7, 270),
+(15, 8, 270),
+(16, 9, 270),
+(17, 10, 266),
+(18, 11, 266),
+(19, 11, 268),
+(20, 12, 266),
+(21, 13, 268),
+(22, 13, 270),
+(23, 14, 268),
+(24, 14, 269),
+(25, 15, 276),
+(26, 16, 276),
+(27, 16, 277),
+(28, 17, 277),
+(29, 17, 278),
+(30, 17, 279),
+(31, 17, 280),
+(32, 17, 281),
+(33, 18, 281),
+(34, 18, 282),
+(35, 19, 282),
+(36, 20, 267),
+(37, 20, 282),
+(38, 21, 267),
+(39, 22, 267),
+(40, 23, 270),
+(41, 23, 271),
+(42, 24, 271),
+(43, 25, 271),
+(44, 26, 271),
+(45, 27, 274),
+(46, 28, 274),
+(47, 29, 272),
+(48, 30, 272),
+(49, 31, 272),
+(50, 32, 273),
+(51, 33, 273),
+(52, 34, 273),
+(53, 35, 273),
+(54, 36, 275),
+(55, 37, 275),
+(56, 38, 275),
+(57, 39, 275),
+(58, 40, 274),
+(59, 41, 274),
+(60, 42, 274),
+(61, 43, 275),
+(62, 44, 275),
+(63, 45, 19),
+(64, 46, 20),
+(65, 46, 21),
+(66, 47, 21),
+(67, 47, 22),
+(68, 48, 23),
+(69, 48, 25),
+(70, 49, 23),
+(71, 49, 24),
+(72, 50, 24),
+(73, 50, 26),
+(74, 51, 26),
+(75, 51, 27),
+(76, 52, 27),
+(77, 52, 28),
+(78, 52, 32),
+(79, 53, 29),
+(80, 54, 40),
+(81, 55, 40),
+(82, 56, 41),
+(83, 57, 41),
+(84, 58, 41),
+(85, 58, 42),
+(86, 59, 31),
+(87, 60, 30),
+(88, 60, 31),
+(89, 61, 34),
+(90, 62, 32),
+(91, 62, 33),
+(92, 63, 33),
+(93, 64, 29),
+(94, 64, 31),
+(95, 64, 32),
+(96, 64, 34),
+(97, 65, 10),
+(98, 66, 12),
+(99, 67, 11),
+(100, 67, 12),
+(101, 68, 10),
+(102, 69, 10),
+(103, 70, 9),
+(104, 70, 11),
+(105, 71, 11),
+(106, 72, 13),
+(107, 73, 13),
+(108, 74, 14),
+(109, 75, 14),
+(110, 76, 6),
+(111, 77, 8),
+(112, 78, 8),
+(113, 79, 9),
+(114, 80, 9),
+(115, 81, 8),
+(116, 82, 7),
+(117, 82, 8),
+(118, 83, 7),
+(119, 84, 7),
+(120, 85, 15),
+(121, 86, 14),
+(122, 87, 15),
+(123, 88, 15),
+(124, 88, 16),
+(125, 88, 19),
+(126, 89, 16),
+(127, 89, 17),
+(128, 90, 17),
+(129, 90, 18),
+(130, 91, 16),
+(131, 91, 18),
+(132, 92, 2),
+(133, 92, 6),
+(134, 93, 1),
+(135, 93, 2),
+(136, 94, 2),
+(137, 95, 3),
+(138, 96, 3),
+(139, 96, 4),
+(140, 97, 4),
+(141, 98, 5),
+(142, 99, 5),
+(143, 100, 4),
+(144, 100, 5),
+(145, 101, 35),
+(146, 101, 37),
+(147, 101, 38),
+(148, 102, 35),
+(149, 102, 36),
+(150, 103, 36),
+(151, 104, 36),
+(152, 104, 37),
+(153, 105, 35),
+(154, 106, 38),
+(155, 107, 39),
+(156, 108, 37),
+(157, 108, 38),
+(158, 109, 39),
+(159, 110, 39),
+(160, 111, 39),
+(161, 112, 185),
+(162, 113, 185),
+(163, 114, 184),
+(164, 114, 185),
+(165, 114, 186),
+(166, 114, 187),
+(167, 115, 184),
+(168, 115, 185),
+(169, 115, 188),
+(170, 115, 189),
+(171, 115, 190),
+(172, 115, 191),
+(173, 115, 192),
+(174, 116, 193),
+(175, 117, 193),
+(176, 117, 202),
+(177, 118, 170),
+(178, 118, 171),
+(179, 118, 172),
+(180, 118, 191),
+(181, 118, 192),
+(182, 118, 196),
+(183, 118, 199),
+(184, 118, 200),
+(185, 118, 203),
+(186, 119, 201),
+(187, 119, 202),
+(188, 120, 200),
+(189, 120, 201),
+(190, 121, 194),
+(191, 122, 194),
+(192, 123, 195),
+(193, 124, 151),
+(194, 124, 152),
+(195, 125, 156),
+(196, 126, 155),
+(197, 126, 156),
+(198, 126, 157),
+(199, 127, 150),
+(200, 127, 151),
+(201, 128, 151),
+(202, 129, 151),
+(203, 129, 153),
+(204, 130, 152),
+(205, 130, 153),
+(206, 130, 158),
+(207, 131, 152),
+(208, 131, 153),
+(209, 131, 158),
+(210, 132, 153),
+(211, 132, 154),
+(212, 132, 155),
+(213, 133, 154),
+(214, 134, 155),
+(215, 135, 148),
+(216, 136, 148),
+(217, 137, 150),
+(218, 138, 150),
+(219, 139, 148),
+(220, 139, 150),
+(221, 140, 149),
+(222, 141, 184),
+(223, 142, 203),
+(224, 143, 179),
+(225, 143, 183),
+(226, 144, 179),
+(227, 145, 177),
+(228, 146, 177),
+(229, 147, 178),
+(230, 148, 177),
+(231, 149, 177),
+(232, 150, 181),
+(233, 150, 182),
+(234, 151, 181),
+(235, 152, 180),
+(236, 153, 180),
+(237, 154, 180),
+(238, 155, 179),
+(239, 156, 181),
+(240, 157, 182),
+(241, 157, 183),
+(242, 158, 158),
+(243, 158, 159),
+(244, 159, 167),
+(245, 159, 168),
+(246, 159, 169),
+(247, 159, 170),
+(248, 159, 171),
+(249, 159, 172),
+(250, 159, 173),
+(251, 159, 203),
+(252, 160, 160),
+(253, 160, 161),
+(254, 160, 162),
+(255, 161, 161),
+(256, 162, 163),
+(257, 163, 164),
+(258, 163, 165),
+(259, 164, 164),
+(260, 165, 166),
+(261, 166, 163),
+(262, 166, 164),
+(263, 167, 178),
+(264, 168, 198),
+(265, 169, 197),
+(266, 170, 197),
+(267, 171, 176),
+(268, 171, 197),
+(269, 172, 166),
+(270, 173, 176),
+(271, 174, 174),
+(272, 175, 174),
+(273, 176, 174),
+(274, 176, 175),
+(275, 177, 175),
+(276, 178, 175),
+(277, 179, 135),
+(278, 180, 136),
+(279, 181, 136),
+(280, 182, 136),
+(281, 183, 137),
+(282, 184, 138),
+(283, 185, 138),
+(284, 186, 139),
+(285, 187, 139),
+(286, 188, 140),
+(287, 189, 140),
+(288, 190, 125),
+(289, 191, 146),
+(290, 192, 146),
+(291, 193, 147),
+(292, 194, 140),
+(293, 195, 147),
+(294, 196, 137),
+(295, 197, 130),
+(296, 197, 131),
+(297, 198, 130),
+(298, 198, 133),
+(299, 199, 133),
+(300, 200, 133),
+(301, 201, 134),
+(302, 202, 134),
+(303, 203, 135),
+(304, 204, 130),
+(305, 205, 147),
+(306, 206, 144),
+(307, 206, 145),
+(308, 207, 141),
+(309, 208, 143),
+(310, 209, 141),
+(311, 210, 142),
+(312, 211, 145),
+(313, 212, 143),
+(314, 213, 141),
+(315, 213, 144),
+(316, 214, 143),
+(317, 215, 124),
+(318, 215, 129),
+(319, 216, 129),
+(320, 217, 128),
+(321, 218, 132),
+(322, 219, 132),
+(323, 220, 132),
+(324, 221, 131),
+(325, 222, 131),
+(326, 223, 125),
+(327, 224, 146),
+(328, 225, 135),
+(329, 226, 126),
+(330, 227, 126),
+(331, 228, 127),
+(332, 229, 127),
+(333, 229, 128),
+(334, 230, 128),
+(335, 231, 25),
+(336, 232, 42),
+(337, 233, 25),
+(338, 234, 42),
+(339, 234, 43),
+(340, 235, 43),
+(341, 236, 42),
+(342, 237, 44),
+(343, 237, 46),
+(344, 238, 44),
+(345, 238, 45),
+(346, 239, 45),
+(347, 240, 45),
+(348, 240, 46),
+(349, 241, 43),
+(350, 242, 43),
+(351, 243, 43),
+(352, 244, 44),
+(353, 245, 44),
+(354, 246, 46),
+(355, 246, 47),
+(356, 247, 46),
+(357, 247, 48),
+(358, 248, 47),
+(359, 249, 47),
+(360, 250, 48),
+(361, 250, 50),
+(362, 251, 48),
+(363, 252, 49),
+(364, 253, 49),
+(365, 254, 50),
+(366, 255, 51),
+(367, 256, 51),
+(368, 257, 51),
+(369, 258, 52),
+(370, 258, 53),
+(371, 259, 52),
+(372, 259, 53),
+(373, 260, 53),
+(374, 260, 54),
+(375, 261, 55),
+(376, 262, 54),
+(377, 262, 55),
+(378, 263, 55),
+(379, 264, 55),
+(380, 265, 204),
+(381, 266, 204),
+(382, 267, 204),
+(383, 267, 205),
+(384, 268, 204),
+(385, 268, 205),
+(386, 269, 205),
+(387, 270, 205),
+(388, 270, 206),
+(389, 271, 207),
+(390, 272, 207),
+(391, 273, 206),
+(392, 274, 207),
+(393, 275, 206),
+(394, 276, 215),
+(395, 276, 218),
+(396, 277, 215),
+(397, 277, 216),
+(398, 278, 217),
+(399, 279, 217),
+(400, 280, 223),
+(401, 281, 218),
+(402, 282, 219),
+(403, 283, 220),
+(404, 283, 221),
+(405, 284, 221),
+(406, 284, 222),
+(407, 285, 220),
+(408, 285, 221),
+(409, 285, 222),
+(410, 286, 221),
+(411, 286, 222),
+(412, 287, 218),
+(413, 287, 222),
+(414, 288, 228),
+(415, 288, 231),
+(416, 288, 233),
+(417, 289, 228),
+(418, 289, 229),
+(419, 289, 233),
+(420, 290, 230),
+(421, 290, 231),
+(422, 291, 228),
+(423, 291, 230),
+(424, 291, 232),
+(425, 292, 232),
+(426, 293, 223),
+(427, 293, 225),
+(428, 294, 224),
+(429, 295, 224),
+(430, 296, 233),
+(431, 297, 225),
+(432, 297, 233),
+(433, 298, 225),
+(434, 298, 226),
+(435, 298, 227),
+(436, 299, 226),
+(437, 299, 227),
+(438, 300, 211),
+(439, 301, 211),
+(440, 301, 212),
+(441, 302, 212),
+(442, 303, 212),
+(443, 303, 213),
+(444, 304, 213),
+(445, 305, 213),
+(446, 305, 214),
+(447, 306, 214),
+(448, 307, 209),
+(449, 308, 208),
+(450, 309, 208),
+(451, 309, 209),
+(452, 310, 209),
+(453, 311, 210),
+(454, 312, 210),
+(455, 313, 117),
+(456, 314, 112),
+(457, 314, 117),
+(458, 315, 113),
+(459, 316, 108),
+(460, 317, 112),
+(461, 318, 114),
+(462, 319, 111),
+(463, 319, 115),
+(464, 320, 118),
+(465, 321, 120),
+(466, 322, 119),
+(467, 323, 119),
+(468, 324, 118),
+(469, 325, 120),
+(470, 326, 121),
+(471, 327, 123),
+(472, 328, 122),
+(473, 329, 121),
+(474, 329, 122),
+(475, 330, 122),
+(476, 331, 123),
+(477, 332, 124),
+(478, 333, 124),
+(479, 334, 117),
+(480, 335, 116),
+(481, 336, 116),
+(482, 337, 116),
+(483, 338, 115),
+(484, 339, 111),
+(485, 340, 114),
+(486, 341, 241),
+(487, 342, 239),
+(488, 343, 241),
+(489, 344, 240),
+(490, 345, 240),
+(491, 346, 238),
+(492, 347, 238),
+(493, 348, 237),
+(494, 348, 238),
+(495, 349, 239),
+(496, 350, 237),
+(497, 350, 238),
+(498, 351, 241),
+(499, 351, 242),
+(500, 352, 242),
+(501, 352, 243),
+(502, 353, 242),
+(503, 353, 243),
+(504, 354, 244),
+(505, 355, 244),
+(506, 356, 246),
+(507, 356, 249),
+(508, 357, 246),
+(509, 357, 247),
+(510, 357, 249),
+(511, 358, 246),
+(512, 358, 250),
+(513, 358, 252),
+(514, 359, 251),
+(515, 360, 251),
+(516, 360, 252),
+(517, 361, 250),
+(518, 361, 252),
+(519, 362, 240),
+(520, 363, 237),
+(521, 364, 239),
+(522, 365, 223),
+(523, 365, 236),
+(524, 366, 234),
+(525, 367, 234),
+(526, 367, 235),
+(527, 368, 235),
+(528, 369, 236),
+(529, 370, 254),
+(530, 371, 253),
+(531, 371, 254),
+(532, 371, 255),
+(533, 372, 250),
+(534, 372, 255),
+(535, 373, 256),
+(536, 374, 256),
+(537, 375, 245),
+(538, 376, 248),
+(539, 377, 245),
+(540, 377, 248),
+(541, 378, 253),
+(542, 379, 247),
+(543, 379, 253),
+(544, 380, 247),
+(545, 380, 250),
+(546, 381, 257),
+(547, 382, 258),
+(548, 383, 258),
+(549, 383, 259),
+(550, 384, 259),
+(551, 385, 257),
+(552, 386, 257),
+(553, 387, 258),
+(554, 388, 260),
+(555, 389, 70),
+(556, 390, 69),
+(557, 391, 69),
+(558, 392, 70),
+(559, 392, 82),
+(560, 393, 68),
+(561, 393, 70),
+(562, 394, 59),
+(563, 395, 59),
+(564, 395, 60),
+(565, 395, 65),
+(566, 396, 60),
+(567, 396, 61),
+(568, 397, 61),
+(569, 398, 56),
+(570, 399, 56),
+(571, 400, 57),
+(572, 400, 58),
+(573, 400, 60),
+(574, 401, 57),
+(575, 402, 58),
+(576, 403, 56),
+(577, 404, 58),
+(578, 405, 59),
+(579, 406, 65),
+(580, 406, 66),
+(581, 406, 67),
+(582, 407, 66),
+(583, 408, 66),
+(584, 408, 67),
+(585, 409, 68),
+(586, 410, 67),
+(587, 411, 68),
+(588, 412, 62),
+(589, 413, 64),
+(590, 413, 65),
+(591, 414, 62),
+(592, 415, 62),
+(593, 416, 63),
+(594, 417, 63),
+(595, 418, 64),
+(596, 419, 63),
+(597, 420, 65),
+(598, 421, 64),
+(599, 422, 80),
+(600, 423, 80),
+(601, 423, 81),
+(602, 424, 79),
+(603, 425, 81),
+(604, 426, 80),
+(605, 427, 71),
+(606, 427, 73),
+(607, 428, 72),
+(608, 429, 72),
+(609, 430, 73),
+(610, 431, 73),
+(611, 432, 74),
+(612, 432, 78),
+(613, 433, 74),
+(614, 433, 75),
+(615, 434, 74),
+(616, 434, 75),
+(617, 435, 75),
+(618, 436, 78),
+(619, 436, 81),
+(620, 437, 82),
+(621, 438, 82),
+(622, 438, 83),
+(623, 438, 85),
+(624, 439, 83),
+(625, 439, 84),
+(626, 440, 83),
+(627, 440, 85),
+(628, 441, 85),
+(629, 442, 84),
+(630, 443, 84),
+(631, 444, 76),
+(632, 444, 79),
+(633, 445, 77),
+(634, 446, 77),
+(635, 447, 78),
+(636, 447, 79),
+(637, 448, 76),
+(638, 448, 77),
+(639, 448, 78),
+(640, 449, 86),
+(641, 450, 103),
+(642, 451, 86),
+(643, 452, 87),
+(644, 453, 87),
+(645, 454, 102),
+(646, 455, 113),
+(647, 456, 109),
+(648, 456, 110),
+(649, 456, 111),
+(650, 457, 107),
+(651, 458, 107),
+(652, 459, 108),
+(653, 460, 103),
+(654, 460, 104),
+(655, 461, 104),
+(656, 462, 86),
+(657, 463, 100),
+(658, 463, 101),
+(659, 464, 101),
+(660, 465, 101),
+(661, 465, 108),
+(662, 466, 102),
+(663, 467, 102),
+(664, 467, 103),
+(665, 468, 103),
+(666, 469, 96),
+(667, 470, 92),
+(668, 471, 92),
+(669, 472, 92),
+(670, 473, 93),
+(671, 474, 93),
+(672, 475, 93),
+(673, 476, 94),
+(674, 477, 99),
+(675, 478, 94),
+(676, 479, 104),
+(677, 479, 105),
+(678, 480, 105),
+(679, 481, 105),
+(680, 481, 106),
+(681, 482, 106),
+(682, 482, 107),
+(683, 483, 88),
+(684, 484, 88),
+(685, 485, 88),
+(686, 486, 89),
+(687, 487, 89),
+(688, 488, 89),
+(689, 489, 91),
+(690, 490, 90),
+(691, 491, 91),
+(692, 492, 90),
+(693, 493, 90),
+(694, 494, 91),
+(695, 495, 97),
+(696, 495, 98),
+(697, 496, 98),
+(698, 497, 98),
+(699, 498, 95),
+(700, 498, 98),
+(701, 498, 99),
+(702, 498, 100),
+(703, 499, 95),
+(704, 500, 99),
+(705, 501, 97),
+(706, 502, 95),
+(707, 503, 96),
+(708, 504, 96),
+(709, 504, 97);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tbl_hasil_kunjungan`
+--
+
+CREATE TABLE `tbl_hasil_kunjungan` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `laporan_id` int(10) UNSIGNED NOT NULL,
+  `nama_lengkap_petugas` varchar(150) NOT NULL,
+  `catatan_keterangan` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_koseka`
+-- Dumping data untuk tabel `tbl_hasil_kunjungan`
+--
+
+INSERT INTO `tbl_hasil_kunjungan` (`id`, `laporan_id`, `nama_lengkap_petugas`, `catatan_keterangan`, `created_at`) VALUES
+(1, 2, 'Aron Zyode Kaxanca Hasibuan', 'Ruta sudah dikunjungi dan berhasil di data', '2026-09-02 00:38:44'),
+(2, 2, 'Aron Zyode Kaxanca Hasibuan', 'Sudahh', '2026-09-02 03:40:07'),
+(3, 2, 'Aron Zyode Kaxanca Hasibuan', 'Tes sebelum info ke Pala', '2026-09-02 03:41:23'),
+(4, 4, 'vioni rimbing', 'saya sudah melakukan pendataan', '2026-09-03 12:09:09'),
+(5, 6, 'STEVI RIBKA SAHAMBANGUN', 'SUDAH DILAKUKAN PENGECEKAN LANGUNG DI RUMAH RESPONDEN DAN SUDAH SELESAI DIDATA', '2026-09-03 12:56:30'),
+(6, 9, 'STEVI RIBKA SAHAMBANGUN', 'SUDAH DILAKUKAN PENGECEKAN LANGSUNG DIRUMAH RESPONDEN DAN SUDAH DIDATA SESUAI DENGAN DOKUMEN PENDUKUNG', '2026-09-03 12:57:43'),
+(7, 8, 'STEVI RIBKA SAHAMBANGUN', 'SUDAH DILAKUKAN PENGECEKAN DIRUMAH RESPONDEN SUDAH DIDATA SESUAI DENGAN DOKUMEN PENDUKUNG', '2026-09-03 12:58:17'),
+(8, 10, 'Merlin Marselie Maleteng', 'sudah di follow up dan bisa diwawancara pukul 12 siang ini.', '2026-09-04 01:52:07'),
+(9, 7, 'Jimmy karel mamahit', 'Sudah dilakukan kunjungan dan kroscek ulang dengan responden...', '2026-09-04 04:54:10'),
+(10, 15, 'Engelhart saselah', 'Sudah dilakukan pengecekan sudah di data dan sudah sesuai', '2026-09-04 05:22:17'),
+(11, 17, 'Evans Christo Bujung', 'Sudah di lakukan pengecekan dirumah dan sudah di data', '2026-09-04 07:28:13'),
+(12, 23, 'SAYYED RIFKI HAEKAL LAMATO', 'Sudah dilakukan pengecekan dan sudah didata walaupun responden berdomisili di singkil', '2026-09-05 06:32:09'),
+(13, 18, 'Henry Charles David Paat', 'Keluarga yang dimaksud sudah di data oleh PPL yang menerima waktu itu adalah orang tua dari nama terkait. Keluarga tersebut di no bangunan 58 prelist 0004-02', '2026-09-07 03:21:10'),
+(14, 22, 'Farhan Adrian Putra Wongkar', 'Sudah di tindak lanjut di hari sabtu dengan responden tersebut dan responden hanya pensiun ASN', '2026-09-07 09:09:48'),
+(15, 21, 'Aurylio Teguh Tatontos', 'Berhasil didata', '2026-09-08 01:03:24'),
+(16, 30, 'JULIYANTI ISRAELY LANGI', 'SUDAH DILAKUKAN PENGECEKKAN DAN PENDATAAN LANGSUNG UNTUK 3KK YANG ADA DI RUMAH ITU.\r\nAWALNYA YANG DI DATA HANYA 2KK :\r\n- SUKOYO IGIRISA/STEIVI SAERANG\r\n- DEETJE SOPUTAN/ANDRE SAERANG\r\nSAAT PENDATAAN HANYA ADA IBU DEETJE (ORANG TUA) & PAK MADJID PEMILIK RUMAH.\r\nIBU STEIVI SAERANG MEMBUAT PELAPORAN BELUM DI DATA KARENA INGIN MEMASTIKAN SEMUA PENDATAAN AWAL YANG DIINFOKAN ADALAH BENAR. \r\nKARENA SAAT ITU IBU STEIVI TIDAK ADA DI TEMPAT.\r\nBAPAK SUKOYO IGIRISA TIDAK MEMPUNYAI USAHA. \r\nBEKERJA SERABUTAN, ANGKAT² BARANG JUALAN PEMBELI TOKO. \r\nKELUARGA DI BANGUNAN ITU PENERIMA BANTUAN DARI PEMERINTAH Rp 600.000,- PER 3 BULAN.', '2026-09-08 11:26:07'),
+(17, 40, 'Sharon Ribka Berikang', 'Sudah dilakukan pengecekan langsung, dan sudah di data dengan menambahkan assignment kepada keluarga baru', '2026-09-12 03:16:37'),
+(18, 36, 'Safri Dawolo', 'Sudah dilakukan pengecekan secara langsung, rumah sudah di data dan data sesuai dengan dokumen pendukung.', '2026-09-12 03:35:23'),
+(19, 42, 'Novita Helena Syuli Rolangon', 'sudah dilakukan pengecekan langsung, rumah sudah terdata dan data sesuai', '2026-09-12 06:25:08'),
+(20, 29, 'Novita Walewangko', 'Sudah melakukan pengecekan dan bertemu langsung dengan responden dan sudah didata', '2026-09-12 11:52:19'),
+(21, 32, 'Josua Imanuel Awuy Runtunuwu', 'Sudah didata di rumah keluarga.', '2026-09-12 13:39:48'),
+(22, 34, 'Novita Enjelina Pontolondo', 'Sudah submit', '2026-09-14 09:27:33'),
+(23, 26, 'evanchristo', 'berhasil', '2026-09-15 00:02:45'),
+(24, 38, 'Nova Tolu', 'berhasil', '2026-09-15 00:03:21'),
+(25, 39, 'vicenzo', '3 kali di kunjungi dan sudah berhasil', '2026-09-16 00:37:45'),
+(26, 46, 'Adisty Putri Syahbuddin', 'Sudah dilakukan kunjungan dan sudah didata.', '2026-09-19 13:04:20'),
+(27, 56, 'Denisa Praselia Tantu', 'Mohon maaf wilayah yang dikirimkan bukan wilayah saya atau tidak termasuk sub sls saya🙏', '2026-09-24 04:19:26'),
+(28, 71, 'Marlein inri soputan', 'Responden tinggal di perum griya 3 Minahasa Utara', '2026-09-24 05:55:50'),
+(29, 68, 'Magdalena Alfonsa Manoi', 'Sudah dilakukan Pendataan atau sensus pada bapak Richie Rendi Pandoh di Perkamil Lingkungan 7 sls 1 nomor bangunan 25', '2026-09-24 06:17:45'),
+(30, 76, 'Magdalena Alfonsa Manoi', 'Sudah di lakukan pendataan atau sensus pada ibu Ivoni Felicia Pontoh Perkamil Lingkungan 8', '2026-09-24 06:59:03'),
+(31, 73, 'Enricho Mumu', 'Sudah dilakukan pendataan --sebelumnya keluarga bapak fanno waktu itu masih di tempat kerja tapi ada orang tua dan sudah dilakukan pendataan lewat orang tua pak fanno.sudah juga konfirmasi lewat WhatsApp terhadap bapak fanno', '2026-09-24 07:21:31'),
+(32, 79, 'Merlin Marselie Maleteng', 'sudah dihubungi dan janjian akan didata pada hari sabtu tgl 26 jam 8 pagi karena saat ini responden sedang bekerja.', '2026-09-24 10:59:06');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tbl_koseka`
+--
+
+CREATE TABLE `tbl_koseka` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `nama_koseka` varchar(100) NOT NULL,
+  `nomor_hp_koseka` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tbl_koseka`
 --
 
 INSERT INTO `tbl_koseka` (`id`, `nama_koseka`, `nomor_hp_koseka`) VALUES
@@ -801,59 +1580,150 @@ INSERT INTO `tbl_koseka` (`id`, `nama_koseka`, `nomor_hp_koseka`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_laporan`
+-- Struktur dari tabel `tbl_laporan`
 --
 
 CREATE TABLE `tbl_laporan` (
-  `id` int UNSIGNED NOT NULL,
-  `nama_pelapor` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
-  `no_telepon` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `kecamatan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `kelurahan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_lingkungan` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `catatan` text COLLATE utf8mb4_general_ci,
-  `waktu_pendataan` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `id` int(10) UNSIGNED NOT NULL,
+  `nama_pelapor` varchar(150) NOT NULL,
+  `no_telepon` varchar(20) DEFAULT NULL,
+  `kecamatan` varchar(100) NOT NULL,
+  `kelurahan` varchar(100) NOT NULL,
+  `nomor_lingkungan` varchar(50) NOT NULL,
+  `catatan` text DEFAULT NULL,
+  `waktu_pendataan` varchar(150) DEFAULT NULL,
   `latitude` decimal(10,8) NOT NULL,
   `longitude` decimal(11,8) NOT NULL,
-  `status` enum('Belum Ditindaklanjuti','Sudah Ditindaklanjuti') COLLATE utf8mb4_general_ci DEFAULT 'Belum Ditindaklanjuti',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `status` enum('Belum Ditindaklanjuti','Sudah Ditindaklanjuti') DEFAULT 'Belum Ditindaklanjuti',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_laporan`
+-- Dumping data untuk tabel `tbl_laporan`
 --
 
 INSERT INTO `tbl_laporan` (`id`, `nama_pelapor`, `no_telepon`, `kecamatan`, `kelurahan`, `nomor_lingkungan`, `catatan`, `waktu_pendataan`, `latitude`, `longitude`, `status`, `created_at`) VALUES
-(2, 'Aron Zyode Kaxanca Hasibuan', '08887654811', 'WANEA', 'WANEA', 'LINGKUNGAN 4', 'Saya sudah disensus, hehe', '01/09/2026 - Kapan Saja / Fleksibel', 1.45238510, 124.85396960, 'Sudah Ditindaklanjuti', '2026-09-01 01:49:01');
+(2, 'Aron Zyode Kaxanca Hasibuan', '08887654811', 'WANEA', 'WANEA', 'LINGKUNGAN 4', 'Saya sudah disensus, hehe', '01/09/2026 - Kapan Saja / Fleksibel', 1.45238510, 124.85396960, 'Sudah Ditindaklanjuti', '2026-09-01 01:49:01'),
+(3, 'Jandri Paath', '081342481021', 'TIKALA', 'TIKALA BARU', 'LINGKUNGAN 6', 'Samping ruko', '03/09/2026 - 08.00 - 09.00 WITA', 1.47808040, 124.86125180, 'Sudah Ditindaklanjuti', '2026-09-01 13:31:05'),
+(4, 'Sofyan Kusuma', '085340072222', 'WENANG', 'TELING BAWAH', 'LINGKUNGAN 3', 'Perumahan city hill teling bawah, ch 3 no 18', '07/09/2026 - 17.00 - 18.00 WITA', 1.47639900, 124.84736140, 'Sudah Ditindaklanjuti', '2026-09-03 07:34:42'),
+(6, 'Aknesia kaseside / warung Gevariel cell', '081342883028', 'TUMINTING', 'SUMOMPO', 'LINGKUNGAN 2', 'Rumah ada teras, dinding tela belum plester, jendela triplex', '04/09/2026 - 14.00 - 15.00 WITA', 1.51252790, 124.86203210, 'Sudah Ditindaklanjuti', '2026-09-03 09:10:54'),
+(7, 'Linda Junita Pattilima/ Mengurus Rumah tangga', '081341534156', 'WANEA', 'PAKOWA', 'LINGKUNGAN 3', 'Rumah cat pagar warna biru', '08/09/2026 - 08.00 - 09.00 WITA', 1.45693500, 124.84577810, 'Sudah Ditindaklanjuti', '2026-09-03 09:17:31'),
+(8, 'Rudy Sianaeng', '085398675980', 'TUMINTING', 'SUMOMPO', 'LINGKUNGAN 2', 'Rmh cet crem pagar hitam samping rmh warong', '04/09/2026 - 12.00 - 13.00 WITA', 1.51393800, 124.86280600, 'Sudah Ditindaklanjuti', '2026-09-03 09:21:02'),
+(9, 'Andreano Tahulending', '082291545656', 'TUMINTING', 'SUMOMPO', 'LINGKUNGAN 2', 'Rumah warna cream di muka jalan raya, pagar hitam ada warung', '04/09/2026 - 12.00 - 13.00 WITA', 1.51394390, 124.86280270, 'Sudah Ditindaklanjuti', '2026-09-03 09:26:31'),
+(10, 'Jeaneman James mamangkey', '082292058885', 'WANEA', 'TANJUNG BATU', 'LINGKUNGAN 2', '', '04/09/2026 - 11.00 - 12.00 WITA', 1.46921840, 124.84127280, 'Sudah Ditindaklanjuti', '2026-09-03 11:15:42'),
+(11, 'Rachman Ma\'anaiya', '082187472835', 'TIKALA', 'TAAS', 'LINGKUNGAN 4', 'rumah warna hijau terpal hijau', '04/09/2026 - 10.00 - 11.00 WITA', 1.46768330, 124.85976540, 'Sudah Ditindaklanjuti', '2026-09-03 14:23:13'),
+(14, 'Sheren Gratia Suwuh/pelajar', '0895393060187', 'PAAL DUA', 'PERKAMIL', 'LINGKUNGAN 1', '', '12/09/2026 - 16.00 - 17.00 WITA', 1.26065140, 124.81735740, 'Sudah Ditindaklanjuti', '2026-09-03 23:22:38'),
+(15, 'Muhamad jibran karim', '085753450479', 'BUNAKEN', 'BAILANG', 'LINGKUNGAN 6', 'Sebelah rumah besar,', '05/09/2026 - 13.00 - 14.00 WITA', 1.53880890, 124.85001690, 'Sudah Ditindaklanjuti', '2026-09-03 23:47:42'),
+(17, 'Mendez Delasandro Gambeh', '085231276025', 'WENANG', 'TELING BAWAH', 'LINGKUNGAN 1', 'Rumah cat hijau, ada garasi mobil', '05/09/2026 - 09.00 - 10.00 WITA', 1.47631700, 124.84143810, 'Sudah Ditindaklanjuti', '2026-09-04 00:26:57'),
+(18, 'JAHIDIN KILAPONG', '082316305446', 'WANEA', 'TELING ATAS', 'LINGKUNGAN 4', 'Rumah ke 4 pagar seng', '04/09/2026 - 13.00 - 14.00 WITA', 1.46696780, 124.85052680, 'Sudah Ditindaklanjuti', '2026-09-04 03:39:14'),
+(19, 'Noldy Rivaldo Paparang', '082148674891', 'TUMINTING', 'SUMOMPO', 'LINGKUNGAN 2', 'Rumah di atas gunung tembok ada pohon di depan rumah', '04/09/2026 - 12.00 - 13.00 WITA', 1.51473170, 124.86374300, 'Sudah Ditindaklanjuti', '2026-09-04 03:40:05'),
+(20, 'Aprianto Putra Paparang', '087743800588', 'TUMINTING', 'SUMOMPO', 'LINGKUNGAN 2', 'Rumah di atas gunung di depan rumah ada juga rumah jadi samping rumah itu ada pohon jadi rumah saya di belakang', '04/09/2026 - 12.00 - 13.00 WITA', 1.51495830, 124.86369170, 'Sudah Ditindaklanjuti', '2026-09-04 03:45:07'),
+(21, 'Turiana widyanti', '083879169706', 'WANEA', 'KAROMBASAN SELATAN', 'LINGKUNGAN 4', 'Masuk lorong kecil rumah ke 2 sebelah kanan', '05/09/2026 - 11.00 - 12.00 WITA', 1.44723200, 124.84513170, 'Sudah Ditindaklanjuti', '2026-09-05 02:33:22'),
+(22, 'Boyke Djones Sondakg', '081262101946', 'PAAL DUA', 'RANOMUUT', 'LINGKUNGAN 1', 'Belakang Sekolah Regina Caeli Kompleks Gardu Induk 70 kV Ranomuut', '05/09/2026 - 14.00 - 15.00 WITA', 1.48067850, 124.87202170, 'Sudah Ditindaklanjuti', '2026-09-05 03:05:14'),
+(23, 'Aryanto sune', '081916056635', 'PAAL DUA', 'PAAL DUA', 'LINGKUNGAN 6', '', '05/09/2026 - 15.00 - 16.00 WITA', 1.51019150, 124.86500190, 'Sudah Ditindaklanjuti', '2026-09-05 05:24:01'),
+(24, 'Varen Andrey Tulandi', '085185336389', 'MALALAYANG', 'BAHU', 'LINGKUNGAN 5', 'Rumah dengan Pagar warna biru.', '07/09/2026 - 18.00 - 19.00 WITA', 1.45765440, 124.82278620, 'Sudah Ditindaklanjuti', '2026-09-07 06:26:11'),
+(25, 'Efrain Sengkeunaung/ tidak ada usaha', '085796125731', 'MALALAYANG', 'MALALAYANG I TIMUR', 'LINGKUNGAN 2', 'Rumah cat warna abu\"', '07/09/2026 - Kapan Saja / Fleksibel', 1.45906720, 124.81979140, 'Sudah Ditindaklanjuti', '2026-09-07 07:17:03'),
+(26, 'Fanti widyanrini', '082397778142', 'WANEA', 'RANOTANA WERU', 'LINGKUNGAN 10', 'Waroeng stefani senayan', '08/09/2026 - 11.00 - 12.00 WITA', 1.47688180, 124.84641270, 'Sudah Ditindaklanjuti', '2026-09-07 09:28:12'),
+(27, 'Venus Bohang', '081355014601', 'MALALAYANG', 'MALALAYANG I TIMUR', 'LINGKUNGAN 2', 'Lorong gereja lahairoi rumah ke 7 seblah kiri Samping rumah 2 tingkat', '09/09/2026 - 11.00 - 12.00 WITA', 1.45913370, 124.81935600, 'Sudah Ditindaklanjuti', '2026-09-07 23:42:59'),
+(28, 'Vedy Herry Waney', '081244553827', 'TIKALA', 'TIKALA ARES', 'LINGKUNGAN 2', 'Belakang Pos TVRI rmh ke 2', '12/09/2026 - 16.00 - 17.00 WITA', 1.47954410, 124.84930520, 'Sudah Ditindaklanjuti', '2026-09-08 01:00:38'),
+(29, 'Hadija Bantu', '0895803670515', 'WANEA', 'TELING ATAS', 'LINGKUNGAN 1', 'Di rumah makan Nagari Minang di depan samsat', '08/09/2026 - 16.00 - 17.00 WITA', 1.46802160, 124.84499440, 'Sudah Ditindaklanjuti', '2026-09-08 01:51:21'),
+(30, 'Sukoyo igirisa', '085394033167', 'SARIO', 'SARIO', 'LINGKUNGAN 2', '', '10/09/2026 - 13.00 - 14.00 WITA', 1.46627210, 124.83443640, 'Sudah Ditindaklanjuti', '2026-09-08 06:45:23'),
+(31, 'Maklon Patty', '089675244094', 'MALALAYANG', 'MALALAYANG I TIMUR', 'LINGKUNGAN 2', 'Malalayang Satu Timur Lingkungan 2 No. 71', '11/09/2026 - 10.00 - 11.00 WITA', 1.45961520, 124.82015980, 'Sudah Ditindaklanjuti', '2026-09-09 06:58:21'),
+(32, 'Tusrianto Rumengan', '0811230281', 'MALALAYANG', 'WINANGUN I', 'LINGKUNGAN 6', '', '12/09/2026 - 10.00 - 11.00 WITA', 1.43506210, 124.83783880, 'Sudah Ditindaklanjuti', '2026-09-09 07:24:50'),
+(33, 'Muhammadin Lamato', '081241622561', 'TIKALA', 'BANJER', 'LINGKUNGAN 7', '', '12/09/2026 - 13.00 - 14.00 WITA', 1.47448180, 124.85129720, 'Sudah Ditindaklanjuti', '2026-09-10 14:03:48'),
+(34, 'Steven Leonard Lumempow', '082195606550', 'MAPANGET', 'KAIRAGI DUA', 'LINGKUNGAN 9', 'Rumah seblah kiri, ketiga dari ujung akhir.sebelah jalan setapak', '11/09/2026 - 14.00 - 15.00 WITA', 1.51170850, 124.89298940, 'Sudah Ditindaklanjuti', '2026-09-11 02:36:55'),
+(35, 'I Nyoman Rendra Chrisensi Sumatra', '082191098007', 'MALALAYANG', 'MALALAYANG I', 'LINGKUNGAN 2', '', '11/09/2026 - 12.00 - 13.00 WITA', 1.45352080, 124.81337010, 'Sudah Ditindaklanjuti', '2026-09-11 02:45:08'),
+(36, 'Heskia Elia Paulus / PNS', '081356048689', 'MALALAYANG', 'WINANGUN I', 'LINGKUNGAN 4', 'Pohon alpukat di halaman', '12/09/2026 - 10.00 - 11.00 WITA', 1.44230490, 124.83357630, 'Sudah Ditindaklanjuti', '2026-09-11 02:48:21'),
+(37, 'Felsi S. Tumewan', '082196930008', 'MALALAYANG', 'MALALAYANG I TIMUR', 'LINGKUNGAN 6', '', '11/09/2026 - 12.00 - 13.00 WITA', 1.43684060, 124.83202020, 'Sudah Ditindaklanjuti', '2026-09-11 02:51:14'),
+(38, 'Anugrah Mangare', '085240888881', 'WANEA', 'KAROMBASAN SELATAN', 'LINGKUNGAN 2', 'Rumah panggung, pagar cat warna orange', '11/09/2026 - 20.00 - 21.00 WITA', 1.44069290, 124.85422890, 'Sudah Ditindaklanjuti', '2026-09-11 02:53:57'),
+(39, 'Freddy Lasut', '082190030326', 'WANEA', 'WANEA', 'LINGKUNGAN 5', 'Rumah pojok pagar besi pendek', '12/09/2026 - 10.00 - 11.00 WITA', 1.46307640, 124.84215700, 'Sudah Ditindaklanjuti', '2026-09-11 03:01:41'),
+(40, 'Marten Adam', '085396220984', 'SINGKIL', 'SINGKIL SATU', 'LINGKUNGAN 5', 'Pintu warna orens hijau', '12/09/2026 - 10.00 - 11.00 WITA', 1.49938580, 124.84821840, 'Sudah Ditindaklanjuti', '2026-09-11 03:02:47'),
+(41, 'Chtistian Rompas/ASN', '082293097711', 'MALALAYANG', 'MALALAYANG II', 'LINGKUNGAN 2', 'Pagar hitam', '12/09/2026 - 12.00 - 13.00 WITA', 1.45323130, 124.78713510, 'Sudah Ditindaklanjuti', '2026-09-11 12:14:46'),
+(42, 'Maichel Suoth', '085215955566', 'MALALAYANG', 'WINANGUN I', 'LINGKUNGAN 5', 'Rumah ke 4 kanan jl ranowangun jambore atas , pagar hitam beton dinding pagar putih', '12/09/2026 - 15.00 - 16.00 WITA', 1.43938460, 124.83765040, 'Sudah Ditindaklanjuti', '2026-09-12 01:09:20'),
+(43, 'Rapotman damanik/RM.Risma', '081318055520', 'MAPANGET', 'PANIKI SATU', 'LINGKUNGAN 4', 'Tepat di pertigaan ada gardu tiang listrik dalam pagar', '18/09/2026 - 14.00 - 15.00 WITA', 1.51559080, 124.91389500, 'Belum Ditindaklanjuti', '2026-09-18 09:28:48'),
+(44, 'Arther eduard suwu', '081355958722', 'MALALAYANG', 'BAHU', 'LINGKUNGAN 7', 'Titik maps prince cell bahu\r\nPerum pln blok e11', '18/09/2026 - 13.00 - 14.00 WITA', 1.45353610, 124.82359710, 'Sudah Ditindaklanjuti', '2026-09-18 10:40:15'),
+(45, 'Akson Mangaehe', '085151234552', 'SINGKIL', 'KOMBOS BARAT', 'LINGKUNGAN 3', '', '21/09/2026 - 09.00 - 10.00 WITA', 1.49435860, 124.85707690, 'Sudah Ditindaklanjuti', '2026-09-18 23:04:48'),
+(46, 'Sakaria', '082259997069', 'TUMINTING', 'KAMPUNG ISLAM', 'LINGKUNGAN 5', 'Rm ci tija', '19/09/2026 - 19.00 - 20.00 WITA', 1.55859650, 124.87284430, 'Sudah Ditindaklanjuti', '2026-09-19 01:40:15'),
+(47, 'Meidy J. Lensun', '085240039800', 'PAAL DUA', 'KAIRAGI WERU', 'LINGKUNGAN 3', 'Rumah yang ada pion2 kecil dimuka, yg ada pohon rambutan bekas kebakaran tapi belum di renov kembali. Untuk sementara tinggal di kos ke atas lagi cat warna orange', '24/09/2026 - 13.00 - 14.00 WITA', 1.49438090, 124.87680940, 'Belum Ditindaklanjuti', '2026-09-22 05:01:03'),
+(48, 'Jefry Richard Ticoalu', '085240625651', 'WENANG', 'MAHAKERET BARAT', 'LINGKUNGAN 3', 'Samping crispork manado rumah berada di bagian bawah.', '23/09/2026 - 09.00 - 10.00 WITA', 1.48439980, 124.84062030, 'Belum Ditindaklanjuti', '2026-09-22 06:20:02'),
+(49, 'Hendry Anapu', '085340081718', 'PAAL DUA', 'RANOMUUT', 'LINGKUNGAN 2', '', '26/09/2026 - 08.00 - 09.00 WITA', 1.47565620, 124.86836130, 'Belum Ditindaklanjuti', '2026-09-24 02:51:29'),
+(50, 'TAUFIQ HIDAYAT PASUE', '082195011284', 'PAAL DUA', 'DENDENGAN DALAM', 'LINGKUNGAN 4', '', '26/09/2026 - 11.00 - 12.00 WITA', 1.48063030, 124.85493120, 'Belum Ditindaklanjuti', '2026-09-24 02:53:40'),
+(51, 'Satria Laiya', '089695085010', 'TUMINTING', 'TUMINTING', 'LINGKUNGAN 6', 'Rumah putih sebelah kanan ada halaman di depan', '25/09/2026 - 12.00 - 13.00 WITA', 1.51315390, 124.85567840, 'Belum Ditindaklanjuti', '2026-09-24 02:54:37'),
+(52, 'Okvan Filantrop Lintjewas', '081382474730', 'MAPANGET', 'BUHA', 'LINGKUNGAN 1', 'Rumah cat coklat, samping warung yusuf dekat alfamart buha', '25/09/2026 - 15.00 - 16.00 WITA', 1.52667220, 124.87471730, 'Belum Ditindaklanjuti', '2026-09-24 03:03:31'),
+(53, 'Hendrick Winatapradja', '082188500200', 'MAPANGET', 'BUHA', 'LINGKUNGAN 1', 'Rumah warna coklat pagar hitam', '25/09/2026 - 09.00 - 10.00 WITA', 1.53974670, 124.90096540, 'Belum Ditindaklanjuti', '2026-09-24 03:07:58'),
+(54, 'HENDRIK ALFRET PIETER WATUNG', '082348437420', 'MALALAYANG', 'MALALAYANG I BARAT', 'LINGKUNGAN 9', 'Rumah Panggung Tengah, Samping Bengkel Adiputra Blitar Malalayang. Yang Pagar Silver', '25/09/2026 - 09.00 - 10.00 WITA', 1.44850840, 124.79685810, 'Belum Ditindaklanjuti', '2026-09-24 03:24:44'),
+(55, 'Juliet Revike Jaqualine Sorongan', '08114308935', 'TIKALA', 'TAAS', 'LINGKUNGAN 5', '', '24/09/2026 - 12.00 - 13.00 WITA', 1.46853750, 124.85613500, 'Belum Ditindaklanjuti', '2026-09-24 04:06:13'),
+(56, 'GETRUIDA MAMUDI', '085256692435', 'MAPANGET', 'KAIRAGI DUA', 'LINGKUNGAN 7', 'Lorong di samping GSJA JEHOVA JIREH\r\nrumah paling atas samping garasi', '26/09/2026 - 09.00 - 10.00 WITA', 1.51070280, 124.88985570, 'Sudah Ditindaklanjuti', '2026-09-24 04:08:23'),
+(57, 'Estefani Dauhan', '85219464390', 'SINGKIL', 'SINGKIL SATU', 'LINGKUNGAN 1', 'Dekat Pangkalan LPJ Tesalonika', '24/09/2026 - 19.00 - 20.00 WITA', 1.50295080, 124.84763710, 'Belum Ditindaklanjuti', '2026-09-24 04:08:59'),
+(58, 'Yudhie Purwaningsih Iskandar', '089624779345', 'MALALAYANG', 'WINANGUN I', 'LINGKUNGAN 1', 'rumah persis perempatan', '24/09/2026 - 19.00 - 20.00 WITA', 1.44537970, 124.83702150, 'Belum Ditindaklanjuti', '2026-09-24 04:09:09'),
+(59, 'Sugaray Londa', '085183178803', 'MALALAYANG', 'MALALAYANG I TIMUR', 'LINGKUNGAN 6', 'Rumah di sebelah bangunan sekolah sementara bangun', '25/09/2026 - Kapan Saja / Fleksibel', 1.44767810, 124.85469970, 'Belum Ditindaklanjuti', '2026-09-24 04:11:36'),
+(60, 'Bobby D Pogalad, SE', '082193077342', 'MAPANGET', 'PANIKI BAWAH', 'LINGKUNGAN 10', 'Jl anggrek A no 20 masuk dari alfamidi', '25/09/2026 - 08.00 - 09.00 WITA', 1.54031250, 124.90657140, 'Belum Ditindaklanjuti', '2026-09-24 04:27:15'),
+(61, 'Jack Bambang Novianto Patras', '085240087879', 'WENANG', 'BUMI BERINGIN', 'LINGKUNGAN 4', '', '29/09/2026 - 14.00 - 15.00 WITA', 1.42681200, 124.85778570, 'Belum Ditindaklanjuti', '2026-09-24 04:31:29'),
+(62, 'Angga Rikky Warouw Palakua', '082349055070', 'WANEA', 'RANOTANA WERU', 'LINGKUNGAN 1', 'Rumah pas di samping SD Negeri 69 Manado', '26/09/2026 - 09.00 - 10.00 WITA', 1.45756330, 124.84355700, 'Belum Ditindaklanjuti', '2026-09-24 04:33:53'),
+(63, 'Joni umar/swasta', '085252412802', 'TIKALA', 'TAAS', 'LINGKUNGAN 1', '', '24/09/2026 - 16.00 - 17.00 WITA', 1.48680850, 124.84250470, 'Belum Ditindaklanjuti', '2026-09-24 04:50:43'),
+(64, 'Joune mailoor', '085256010420', 'SARIO', 'SARIO', 'LINGKUNGAN 4', '', '25/09/2026 - 18.00 - 19.00 WITA', 1.46837600, 124.83600440, 'Belum Ditindaklanjuti', '2026-09-24 05:15:43'),
+(65, 'Christian Imannuel Kiroh', '085161172591', 'SINGKIL', 'SINGKIL SATU', 'LINGKUNGAN 5', 'Singkil satu lingkungan lima jalan sungai barito', '26/09/2026 - 13.00 - 14.00 WITA', 1.50045820, 124.84883580, 'Belum Ditindaklanjuti', '2026-09-24 05:17:15'),
+(66, 'SELVIE MANGINDAAN', '081354898694', 'MAPANGET', 'PANIKI BAWAH', 'LINGKUNGAN 10', 'jl anggrek 1 no 28 setelah prampatan rumah kedua sebelah kiri', '24/09/2026 - 18.00 - 19.00 WITA', 1.54088680, 124.90995880, 'Belum Ditindaklanjuti', '2026-09-24 05:17:46'),
+(67, 'Chelsi Tendean', '081242572718', 'MALALAYANG', 'MALALAYANG I BARAT', 'LINGKUNGAN 4', 'Perum GIWALE Blok M6', '28/09/2026 - 10.00 - 11.00 WITA', 1.42146810, 124.81283390, 'Belum Ditindaklanjuti', '2026-09-24 05:33:11'),
+(68, 'Richie Rendi Pandoh', '085299444426', 'PAAL DUA', 'PERKAMIL', 'LINGKUNGAN 7', '', '24/09/2026 - 17.00 - 18.00 WITA', 1.47489400, 124.87519350, 'Sudah Ditindaklanjuti', '2026-09-24 05:34:38'),
+(69, 'Muhammad Amin Karim', '085394453121', 'SINGKIL', 'KETANG BARU', 'LINGKUNGAN 3', 'Pagar coklat', '24/09/2026 - 17.00 - 18.00 WITA', 1.48787190, 124.85375160, 'Belum Ditindaklanjuti', '2026-09-24 05:35:12'),
+(70, 'OLGA DIYANA RIEKE TUMEWAN', '0895334302023', 'PAAL DUA', 'RANOMUUT', 'LINGKUNGAN 2', 'lorong samping kantor lurah ranomuut Rumah pling pojok warna abu-abu', '26/09/2026 - 09.00 - 10.00 WITA', 1.47498660, 124.86832690, 'Belum Ditindaklanjuti', '2026-09-24 05:37:16'),
+(71, 'RENALD REGINO MASOARA', '081344181401', 'MAPANGET', 'PANIKI DUA', 'LINGKUNGAN 1', 'Rumah Cat Putih gading berda di per empatan. sampingTK Raihana', '24/09/2026 - 17.00 - 18.00 WITA', 1.51140130, 124.92154360, 'Sudah Ditindaklanjuti', '2026-09-24 05:45:56'),
+(72, 'Orlando Stiven Kaparang', '085340310003', 'MAPANGET', 'PANIKI BAWAH', 'LINGKUNGAN 10', 'Tulip 4 no 4', '27/09/2026 - Kapan Saja / Fleksibel', 1.53350780, 124.90752350, 'Belum Ditindaklanjuti', '2026-09-24 05:51:28'),
+(73, 'FANNO HIZKIA TULANGOW', '089698144244', 'MALALAYANG', 'MALALAYANG I', 'LINGKUNGAN 3', 'Pagar beton putih besi hitam, pertigaan ada lampu jalan', '26/09/2026 - 09.00 - 10.00 WITA', 1.44925050, 124.81329430, 'Sudah Ditindaklanjuti', '2026-09-24 06:07:06'),
+(74, 'Jeane Anita Marjam Paath', '081340350009', 'WENANG', 'TIKALA KUMARAKA', 'LINGKUNGAN 4', 'Kost Halelluyah, Jl. Lumimuut IV no. 1-3 (pagar warna biru)', '24/09/2026 - 17.00 - 18.00 WITA', 1.48277420, 124.84538200, 'Belum Ditindaklanjuti', '2026-09-24 06:21:18'),
+(75, 'Jily Benediktus Making', '085117818382', 'WENANG', 'MAHAKERET TIMUR', 'LINGKUNGAN 1', '', '24/09/2026 - 17.00 - 18.00 WITA', 1.48395460, 124.84358070, 'Belum Ditindaklanjuti', '2026-09-24 06:22:04'),
+(76, 'Ivoni Felicia Pontoh', '0895353255928', 'PAAL DUA', 'PERKAMIL', 'LINGKUNGAN 8', 'Belakang alfamart perkamil', '25/09/2026 - 16.00 - 17.00 WITA', 1.48024720, 124.87002080, 'Sudah Ditindaklanjuti', '2026-09-24 06:28:18'),
+(77, 'Novi Punusingon', '082192049502', 'WANEA', 'TINGKULU', 'LINGKUNGAN 8', 'Belakang golden lake resort depan pohon mantoa', '25/09/2026 - 19.00 - 20.00 WITA', 1.45675460, 124.85739650, 'Belum Ditindaklanjuti', '2026-09-24 07:25:10'),
+(78, 'Jermias Aror/Pendeta', '085255526966', 'MALALAYANG', 'MALALAYANG I BARAT', 'LINGKUNGAN 9', 'Masuk Jl. Rajawali rumah ke 2 kiri Rumah Panggung Minahasa,', '27/09/2026 - 13.00 - 14.00 WITA', 1.44552830, 124.79665420, 'Belum Ditindaklanjuti', '2026-09-24 07:26:17'),
+(79, 'Silvester Jones Runtukahu', '082291868814', 'SARIO', 'SARIO TUMPAAN', 'LINGKUNGAN 2', 'Depan rm. XO zuki dan Erha, ada warung2 depan rumah', '26/09/2026 - 08.00 - 09.00 WITA', 1.46748260, 124.83120110, 'Sudah Ditindaklanjuti', '2026-09-24 07:30:23'),
+(80, 'Christian Pinontoan', '085283488413', 'MALALAYANG', 'WINANGUN I', 'LINGKUNGAN 2', '', '24/09/2026 - 15.00 - 16.00 WITA', 1.44222340, 124.83741400, 'Belum Ditindaklanjuti', '2026-09-24 07:31:42'),
+(81, 'GLADYS JENNIVER SONDAKH', '081524424842', 'WENANG', 'MAHAKERET TIMUR', 'LINGKUNGAN 1', 'Lorong Gapura Merah Putih, Rumah kedua sebelah Kiri', '24/09/2026 - 15.00 - 16.00 WITA', 1.48378750, 124.84328360, 'Belum Ditindaklanjuti', '2026-09-24 07:35:00'),
+(82, 'Cheni Jeams Kandou', '082343249375', 'WANEA', 'KAROMBASAN UTARA', 'LINGKUNGAN 3', 'Rumah cat putih, pagar warna abu-abu, depan Toko Bangunan UD. Sibela.', '26/09/2026 - 16.00 - 17.00 WITA', 1.45464710, 124.84025630, 'Belum Ditindaklanjuti', '2026-09-24 07:36:15'),
+(83, 'Richard Romario Samuel Rawis', '085250809060', 'WANEA', 'PAKOWA', 'LINGKUNGAN 2', '', '28/09/2026 - 15.00 - 16.00 WITA', 1.45842560, 124.84263810, 'Belum Ditindaklanjuti', '2026-09-24 07:39:51'),
+(84, 'Sonny Ruland Adolf Pasuhuk', '081244770330', 'MALALAYANG', 'MALALAYANG II', 'LINGKUNGAN 5', 'Perumahan Minanga Permai Blok C-1, Malalayang II (Praktek dokter Sonny Pasuhuk)', '26/09/2026 - 08.00 - 09.00 WITA', 1.45456390, 124.78618830, 'Belum Ditindaklanjuti', '2026-09-24 07:41:21'),
+(85, 'Donald Sambuaga', '082187760951', 'MALALAYANG', 'KLEAK', 'LINGKUNGAN 1', 'Dimohon utk sensus di kantor tempat kerja 😇🙏', '25/09/2026 - 13.00 - 14.00 WITA', 1.48440940, 124.85006470, 'Belum Ditindaklanjuti', '2026-09-24 07:41:55'),
+(86, 'Rolly Sendow', '085298242807', 'SARIO', 'RANOTANA', 'LINGKUNGAN 3', 'Kantor BPBD Kota Manado', '25/09/2026 - 13.00 - 14.00 WITA', 1.48434290, 124.85008580, 'Belum Ditindaklanjuti', '2026-09-24 07:47:13'),
+(87, 'CHOSTANTINUS LESAWENGEN', '081356268753', 'MAPANGET', 'KAIRAGI SATU', 'LINGKUNGAN 6', 'Depan Gapura Perum Holy Lestari', '24/09/2026 - 16.00 - 17.00 WITA', 1.49642740, 124.87052500, 'Belum Ditindaklanjuti', '2026-09-24 08:04:32'),
+(88, 'NOVRI ARIANTO TAMPI', '085398937398', 'WANEA', 'RANOTANA WERU', 'LINGKUNGAN 10', 'Rumah dan pagar cat cream di jalan setapak', '24/09/2026 - 08.00 - 09.00 WITA', 1.44776400, 124.84584060, 'Belum Ditindaklanjuti', '2026-09-24 08:07:20'),
+(89, 'Ratna Suoth', '089631540075', 'WANEA', 'TINGKULU', 'LINGKUNGAN 3', 'Kantor Dinas Pengendalian Penduduk dan KB Kota Manado', '29/09/2026 - 15.00 - 16.00 WITA', 1.46434720, 124.85344290, 'Belum Ditindaklanjuti', '2026-09-24 08:13:05'),
+(90, 'Danny Jesly Pua', '085240153360', 'WANEA', 'KAROMBASAN SELATAN', 'LINGKUNGAN 2', '', '27/09/2026 - 14.00 - 15.00 WITA', 1.45083060, 124.84199880, 'Belum Ditindaklanjuti', '2026-09-24 08:14:57'),
+(91, 'Meilina ussu/pns', '08114316940', 'WANEA', 'PAKOWA', 'LINGKUNGAN 3', 'Perumahan de premium matungkas\r\nRumah ke tiga wana kuning', '25/09/2026 - 09.00 - 10.00 WITA', 1.47643910, 124.97644770, 'Belum Ditindaklanjuti', '2026-09-24 08:21:10'),
+(92, 'John Ismail Merentek', '081340251819', 'TIKALA', 'TIKALA BARU', 'LINGKUNGAN 3', 'Rumah cat krem, pagar besi coklat', '28/09/2026 - 18.00 - 19.00 WITA', 1.47770110, 124.85430840, 'Belum Ditindaklanjuti', '2026-09-24 08:23:54'),
+(93, 'John Ismail Merentek', '081340251819', 'TIKALA', 'TIKALA BARU', 'LINGKUNGAN 3', 'Rumah cat krem, pagar besi coklat', '28/09/2026 - 18.00 - 19.00 WITA', 1.47770110, 124.85430840, 'Belum Ditindaklanjuti', '2026-09-24 08:23:54'),
+(94, 'Yuni kinabi', '082393516956', 'MALALAYANG', 'BAHU', 'LINGKUNGAN 2', 'Kel. Lawandi', '24/09/2026 - 19.00 - 20.00 WITA', 1.45699050, 124.82468610, 'Belum Ditindaklanjuti', '2026-09-24 08:33:02'),
+(95, 'Ricwan Imanuel Rajab', '081256201040', 'TIKALA', 'TIKALA ARES', 'LINGKUNGAN 1', 'Dinas Pemberdayaan Perempuan dan Perlindungan Anak', '28/09/2026 - 09.00 - 10.00 WITA', 1.48425320, 124.84990420, 'Belum Ditindaklanjuti', '2026-09-24 08:34:04'),
+(96, 'Wahyudy Lamusu', '087777478190', 'MAPANGET', 'BUHA', 'LINGKUNGAN 4', 'Rumah cat warna putih dan abu-abu', '25/09/2026 - 10.00 - 11.00 WITA', 1.51912960, 124.88012400, 'Belum Ditindaklanjuti', '2026-09-24 08:40:42'),
+(97, 'Djeverly Jones momongan', '0895630903926', 'WANEA', 'PAKOWA', 'LINGKUNGAN 4', '', '24/09/2026 - 18.00 - 19.00 WITA', 1.45913670, 124.84401320, 'Belum Ditindaklanjuti', '2026-09-24 08:58:21'),
+(98, 'Honny David Kansil', '081340383966', 'PAAL DUA', 'RANOMUUT', 'LINGKUNGAN 1', 'Rumah pagar hitam diapit raja aki paal dua dan ud buntang anugerah', '25/09/2026 - 10.00 - 11.00 WITA', 1.48503700, 124.86649860, 'Belum Ditindaklanjuti', '2026-09-24 09:02:26'),
+(99, 'Tirsa Ingkiriwang', '082293200725', 'WANEA', 'KAROMBASAN UTARA', 'LINGKUNGAN 2', 'Dinding luar ada gantungan daun rambat', '26/09/2026 - 10.00 - 11.00 WITA', 1.45793700, 124.83689520, 'Belum Ditindaklanjuti', '2026-09-24 09:10:43'),
+(100, 'HUNTONO ANGJAYA', '082348006716', 'MAPANGET', 'BUHA', 'LINGKUNGAN 3', 'Pagar dan kanopi warna biru (samping chelsy salon)', '26/09/2026 - 09.00 - 10.00 WITA', 1.51893800, 124.88966360, 'Belum Ditindaklanjuti', '2026-09-24 09:11:52'),
+(101, 'LUKAS ARMANDO AREROS', '08114379292', 'BUNAKEN', 'MOLAS', 'LINGKUNGAN 5', 'Jl. Satsuit Tubun Jalan Baru Batusaiki Lorong Tower Telkomsel Rumah Cat Kuning', '24/09/2026 - 16.00 - 17.00 WITA', 1.53487240, 124.84338100, 'Belum Ditindaklanjuti', '2026-09-24 09:14:21'),
+(102, 'Samuel Agatz Nekel Kapojos', '082349003016', 'WENANG', 'MAHAKERET BARAT', 'LINGKUNGAN 6', 'Rumah ke 5 sebelah kanan..', '26/09/2026 - 13.00 - 14.00 WITA', 1.48237190, 124.84222180, 'Belum Ditindaklanjuti', '2026-09-24 09:15:04'),
+(103, 'Yohanes Pulman Katuwu', '082187719384', 'MALALAYANG', 'WINANGUN I', 'LINGKUNGAN 2', 'Rumah Ke 7 Sebelah kiri dari masuk lorong metro..cat. tlpn dulu', '24/09/2026 - 17.00 - 18.00 WITA', 1.44007860, 124.83616590, 'Belum Ditindaklanjuti', '2026-09-24 09:24:43'),
+(104, 'Giovani Reyvan Palar', '085244959023', 'SINGKIL', 'KOMBOS TIMUR', 'LINGKUNGAN 4', 'Rumah putih pagar hitam, pertigaan pertama rumah pertama', '24/09/2026 - 17.00 - 18.00 WITA', 1.50103290, 124.86777460, 'Belum Ditindaklanjuti', '2026-09-24 09:44:50'),
+(105, 'Max Marthin Pinangkaan', '082293248886', 'MAPANGET', 'KAIRAGI DUA', 'LINGKUNGAN 8', 'Rumah pagar hitam, depan salon Feby', '25/09/2026 - 08.00 - 09.00 WITA', 1.50906570, 124.89146150, 'Belum Ditindaklanjuti', '2026-09-24 10:14:08'),
+(106, 'Anggel Aygreyna Rini Kindangen', '082291624493', 'MALALAYANG', 'KLEAK', 'LINGKUNGAN 1', 'Impres bawah atas masjid', '24/09/2026 - 19.00 - 20.00 WITA', 1.46357180, 124.83987610, 'Belum Ditindaklanjuti', '2026-09-24 11:07:29'),
+(107, 'RAINIER PANGEMANAN', '087846831522', 'WANEA', 'TANJUNG BATU', 'LINGKUNGAN 5', 'Pagar runah warna coklat - merah muda', '03/10/2026 - 09.00 - 10.00 WITA', 1.46401340, 124.84671500, 'Belum Ditindaklanjuti', '2026-09-24 11:17:07'),
+(108, 'Yuniarno Soenardjo', '082343219456', 'WANEA', 'PAKOWA', 'LINGKUNGAN 1', 'Rumah belum cat', '25/09/2026 - 14.00 - 15.00 WITA', 1.47009540, 124.91096220, 'Belum Ditindaklanjuti', '2026-09-24 11:42:55'),
+(109, 'Patris Chrestiano Pangaila', '081288489444', 'WENANG', 'BUMI BERINGIN', 'LINGKUNGAN 4', 'Inspektorat Kota manado jln Pameran Kelurahan Kairagi Dua', '28/09/2026 - 08.00 - 09.00 WITA', 1.49740620, 124.89995960, 'Belum Ditindaklanjuti', '2026-09-24 12:21:57'),
+(110, 'Apriani Mansauda/ASN', '082291210589', 'BUNAKEN', 'MERAS', 'LINGKUNGAN 1', 'Rumah cat krem pagar besi warna putih', '24/09/2026 - 18.00 - 19.00 WITA', 1.31767370, 124.81397430, 'Belum Ditindaklanjuti', '2026-09-24 13:25:23'),
+(111, 'Muhammad Abdullah', '085240534329', 'SINGKIL', 'SINGKIL SATU', 'LINGKUNGAN 1', 'Rumah pagar hijau', '25/09/2026 - 14.00 - 15.00 WITA', 1.49695170, 124.85216610, 'Belum Ditindaklanjuti', '2026-09-24 14:18:12');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_hasil_kunjungan`
---
-
-CREATE TABLE `tbl_hasil_kunjungan` (
-  `id` int UNSIGNED NOT NULL,
-  `laporan_id` int UNSIGNED NOT NULL,
-  `nama_lengkap_petugas` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
-  `catatan_keterangan` text COLLATE utf8mb4_general_ci NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tbl_pml`
+-- Struktur dari tabel `tbl_pml`
 --
 
 CREATE TABLE `tbl_pml` (
-  `id` int UNSIGNED NOT NULL,
-  `nama_pml` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_hp_pml` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `nama_pml` varchar(100) NOT NULL,
+  `nomor_hp_pml` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_pml`
+-- Dumping data untuk tabel `tbl_pml`
 --
 
 INSERT INTO `tbl_pml` (`id`, `nama_pml`, `nomor_hp_pml`) VALUES
@@ -901,18 +1771,76 @@ INSERT INTO `tbl_pml` (`id`, `nama_pml`, `nomor_hp_pml`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_ppl`
+-- Struktur dari tabel `tbl_pml_sensus`
+--
+
+CREATE TABLE `tbl_pml_sensus` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `nama_pml` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nomor_hp_pml` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data untuk tabel `tbl_pml_sensus`
+--
+
+INSERT INTO `tbl_pml_sensus` (`id`, `nama_pml`, `nomor_hp_pml`) VALUES
+(1, 'Lestari Suhendri Tintingon', '085299336334'),
+(2, 'Lesti Natalia Sumangkut', '085215001016'),
+(3, 'Kartika Christina kasim', '085213431118'),
+(4, 'Roy Andreas Melville Makalew', '081943588567'),
+(5, 'Meiling Kurniawati Siape', '082293830081'),
+(6, 'Festie Sepang', '0895396305288'),
+(7, 'Jeffry Robby Tumiwa', '089672023647'),
+(8, 'JOVELIE EVALYN WOKAS', '085254414276'),
+(9, 'Maya Marlin Austin Rembet', '081344487682'),
+(10, 'Rolita Prisilia Mahalari', '083132680921'),
+(11, 'Dhanya Eleonora Victory', '081385381342'),
+(12, 'Prisila kristiani pangemanan', '085340401551'),
+(13, 'Feibe Ireine Syalome Maramis', '089501774084'),
+(14, 'AUDI AVRI HENRY SINGAL', '082191900935'),
+(15, 'Alvani Bregina Ngongoloy', '082195029009'),
+(16, 'Adriana Tandaju', '081242932021'),
+(17, 'Marlin. T. O. Kario', '0895360354517'),
+(18, 'SRI RETNO PUSPITO', '085342398626'),
+(19, 'Febriani Valentin Lantemona', '081355313438'),
+(20, 'Fily Sepang', '085397300031'),
+(21, 'Farida Tampang', '082196639300'),
+(22, 'Tirza Lapian', '0895355189790'),
+(23, 'Esther Angle Sepang', '082193629092'),
+(24, 'Jacky Mario Sumual', '085342895265'),
+(25, 'Marian sonia polii', '082271663272'),
+(26, 'Sri Mulyawati', '081143201160'),
+(27, 'Maria Francisca Maun', '085255559499'),
+(28, 'STEVI NOVITA WULAN RUMANGKANG', '089530826293'),
+(29, 'Sutria Meilani Tiwow', '087840065798'),
+(30, 'Hermanto Tuppi', '095802557723'),
+(31, 'Inka Gabriella t bataha', '083156900703'),
+(32, 'Feki Wangka', '085256048677'),
+(33, 'Yulianti Boham', '082293200522'),
+(34, 'Pingkan Winda Sarayar', '085394084322'),
+(35, 'Atria Sari Juwita Umar', '081346616661'),
+(36, 'Marlisah Sarwendah Rompas', '089512729948'),
+(37, 'Randhy Tahulending', '089519432961'),
+(38, 'ISMAIL YAMA', '081949971910'),
+(39, 'Meike Marta Tuuk', '085397323406'),
+(40, 'TEKLA RENTOR', '081943446158');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tbl_ppl`
 --
 
 CREATE TABLE `tbl_ppl` (
-  `id` int UNSIGNED NOT NULL,
-  `nama_ppl` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `nomor_hp_ppl` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `pml_id` int UNSIGNED DEFAULT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `nama_ppl` varchar(100) NOT NULL,
+  `nomor_hp_ppl` varchar(20) DEFAULT NULL,
+  `pml_id` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_ppl`
+-- Dumping data untuk tabel `tbl_ppl`
 --
 
 INSERT INTO `tbl_ppl` (`id`, `nama_ppl`, `nomor_hp_ppl`, `pml_id`) VALUES
@@ -1202,18 +2130,319 @@ INSERT INTO `tbl_ppl` (`id`, `nama_ppl`, `nomor_hp_ppl`, `pml_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tbl_wilayah`
+-- Struktur dari tabel `tbl_ppl_sensus`
+--
+
+CREATE TABLE `tbl_ppl_sensus` (
+  `id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `nama_ppl` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `nomor_hp_ppl` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pml_id` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data untuk tabel `tbl_ppl_sensus`
+--
+
+INSERT INTO `tbl_ppl_sensus` (`id`, `nama_ppl`, `nomor_hp_ppl`, `pml_id`) VALUES
+(1, 'Gracilia Debora Mondoringin', '089506282257', 1),
+(2, 'Alfa W. Lengkey', '085256468579', 1),
+(3, 'Eivel Rumengan', '081241103259', 1),
+(4, 'Thesalonika Tifany Wori', '08975296744', 1),
+(5, 'Sandri Mokoagow', '082351308449', 1),
+(6, 'Abrian Oktavianus Lonteng', '085219009797', 1),
+(7, 'Brenda Lengkong', '082187278682', 1),
+(8, 'Eka Santi Wahyuningsih', '081578394129', 2),
+(9, 'Diana Tambuwun', '08986526873', 2),
+(10, 'Enricho Mumu', '081257425138', 2),
+(11, 'Jordio Jonathan Peterson Kukus', '085240389757', 2),
+(12, 'Intan Ayu Lestari', '082193091804', 2),
+(13, 'Kezia Valen Debora Manu', '0895395347549', 2),
+(14, 'Audy Angelina Teguh', '085142857929', 2),
+(15, 'Rigan Agachi Inalanu', '089695049733', 3),
+(16, 'Stive Melianus Mairuhu', '082395173547', 3),
+(17, 'Kireyne Eben Paat', '082290841730', 3),
+(18, 'Veronika Elisabeth Maria Lomban', '08997551600', 3),
+(19, 'Bianca Audrey Chapin Dimpudus', '082189515716', 3),
+(20, 'Gladys Vinnissia Lanny Tumilaar', '081355915113', 3),
+(21, 'Caeyzhi Priskilla Tahar', '082196936278', 3),
+(22, 'Debora Militia Anastasia Tenda', '081524096261', 4),
+(23, 'Fitriya Eka Damayanti', '08995985760', 4),
+(24, 'Fidelia Tishri Kololy', '081386445125', 4),
+(25, 'Naftanael Mourits Walangitan', '085696699353', 4),
+(26, 'Liza Julianti Djamaluddin', '083863955004', 4),
+(27, 'Vivvine Jacobus Dame', '082195640299', 4),
+(28, 'Refi Redia Ruung', '082293629174', 4),
+(29, 'Jhonathan Frilli Rey', '085657088738', 5),
+(30, 'Naomi Ise', '0895804035329', 5),
+(31, 'Paulyna Carolinsca Seke', '089505944747', 5),
+(32, 'Sutirawati Mokoagow', '085696986522', 5),
+(33, 'Patricia Sukma Langit', '0895322430935', 5),
+(34, 'Lady Jane Octabela Pondaag', '081212007789', 5),
+(35, 'Novita Helena Syuli Rolangon', '087863624758', 5),
+(36, 'Ruth Papente', '081340778127', 6),
+(37, 'Safri Dawolo', '087875854962', 6),
+(38, 'Josua Imanuel Awuy Runtunuwu', '081343531563', 6),
+(39, 'Anita Afrianti Semen', '089695421690', 6),
+(40, 'Novita Theresia Karinda', '081342198605', 6),
+(41, 'Kenneth Alexandre Gerzon Junior Talangamin', '08996792209', 6),
+(42, 'Kartika Constantia Yasin', '081317979092', 6),
+(43, 'Selly Angelia Sisca Syalomitha Rugian', '089667733142', 7),
+(44, 'Thessalonica G F Lontoh', '0895602353024', 7),
+(45, 'Juliyanti Israely Langi', '082341722227', 7),
+(46, 'Ervina Mongkau', '085256302789', 7),
+(47, 'Stevania Elisabeth Claudia Lukar', '082346205869', 7),
+(48, 'Andre Kaligis', '085347203832', 7),
+(49, 'Amelia Preciliea Lan Sumual', '082296378844', 7),
+(50, 'Muhammad Riyandi Sugeng Bin Karmat', '087870101137', 8),
+(51, 'Dody Daniel Josua Jizat Hermana', '081356541715', 8),
+(52, 'Desti Aprilli Zefanya Kario', '081340743914', 8),
+(53, 'Sharen Maria Sigarlaki', '089507241528', 8),
+(54, 'Veilanny Kaengke', '082192148577', 8),
+(55, 'Jennifer Fersty Pangau', '085240772600', 8),
+(56, 'Lanny Laidy Rondonuwu', '081356056323', 8),
+(57, 'Stephen Kentey', '0895395207107', 9),
+(58, 'Gunawan Lumiu', '085256621178', 9),
+(59, 'Indah Maiby Lasut', '087844737383', 9),
+(60, 'Jacklyn Veine Risye Ruru', '085314664900', 9),
+(61, 'Aurylio Teguh Tatontos', '0895802022641', 9),
+(62, 'Yogi Prananta Gurusinga', '081260712207', 9),
+(63, 'Evannoel Quenn Karlos', '0895397238318', 9),
+(64, 'Esther Pamela Adeleida Malonda', '089529371307', 10),
+(65, 'Magdalena Worotitjan', '082190000098', 10),
+(66, 'Gracia Evita Theodora Salendu', '081340389757', 10),
+(67, 'Jimmy Karel Mamahit', '081243575561', 10),
+(68, 'Felansia Teresia Pipi', '082324586173', 10),
+(69, 'Glendy Queen Supit', '0895396317688', 10),
+(70, 'Nova Meisye Angelina Tolu', '082190041878', 10),
+(71, 'Vioni Hannah Uriely Rimbing', '085200018400', 11),
+(72, 'Nova Christine Rotinsulu', '082188382244', 11),
+(73, 'Henry Charles David Paat', '088807019465', 11),
+(74, 'Novita Meita Walewangko', '05255770064', 11),
+(75, 'Dearryl Jeremiah Mawuntu', '082111020967', 11),
+(76, 'Jeaysi Angelin Buka', '089503166619', 11),
+(77, 'Vicentzo Delveichio Hormati', '0895396487545', 11),
+(78, 'Syaloom Sharon Maris', '0895359917486', 12),
+(79, 'Merlin Marselie Maleteng', '085696553747', 12),
+(80, 'Renais Samuel Laoh', '089618052015', 12),
+(81, 'Lidya Esther Fredrika Pangalila', '082208236842', 12),
+(82, 'Atikah Zakiyah', '0895802098382', 12),
+(83, 'Livi Ifta Pangalila', '085396265044', 12),
+(84, 'Julin Maloransa', '085256561895', 12),
+(85, 'Eunike Sherenia Larobu', '082197049389', 13),
+(86, 'Leidy Camelia Wantania', '081340198193', 13),
+(87, 'Linda Betsie Renny Wowor', '085823036300', 13),
+(88, 'Evans Christio Bujung', '082196654214', 13),
+(89, 'Eva Sari Yuliani Tambuwun', '085757100134', 13),
+(90, 'Sentha Sisilia Rondonuwu', '082343818538', 13),
+(91, 'Zullasri Muliling', '085161622626', 13),
+(92, 'Reini Paulus', '085394326990', 14),
+(93, 'Adinda Natasya Rahmawati Hulu', '0895323939654', 14),
+(94, 'susly senewe', '081340704900', 14),
+(95, 'Desra Indah Lestari Thalib', '081245718466', 14),
+(96, 'Cecillia Venturini Artho', '085254241279', 14),
+(97, 'Sheren Gabriella Alfeniar Kodongan', '085242697842', 14),
+(98, 'Suriaty Hadji Ali', '081245077802', 14),
+(99, 'Regio Mailoor', '089531198221', 15),
+(100, 'Erika Lapian', '085397055373', 15),
+(101, 'Susi Indriyani', '081245029155', 15),
+(102, 'Islamyati Mulia Sari Abbas', '085171069647', 15),
+(103, 'Giovany Mayong Koagow', '089501854817', 15),
+(104, 'Tesalonika Debora Firjinia Manembu', '08976474206', 15),
+(105, 'Valen Barry Palandi', '082153509368', 15),
+(106, 'Yanie Sasehang', '085298530888', 16),
+(107, 'Kalyana Sahla', '082195674453', 16),
+(108, 'Oktaria Adriane Senduk', '082271111139', 16),
+(109, 'Josua Tengker', '081245523923', 16),
+(110, 'Viva Olivia Sandra Nelwan', '081346264712', 16),
+(111, 'Mohamad Gifhari Karim', '089527175724', 16),
+(112, 'Dona Kolli', '085825241344', 16),
+(113, 'Christy Junitri Enoch', '082251855658', 17),
+(114, 'Winda Devika mahmud', '089658762244', 17),
+(115, 'Agung Ismail Montoiyo', '087831773614', 17),
+(116, 'Nur Cahyanti Saputri', '089695717193', 17),
+(117, 'Riavida A. R. Ali', '087750017955', 17),
+(118, 'Bertrand Geovano Pangemanan', '089698772641', 17),
+(119, 'Aerlangga Marfellino Rafael Wullur', '085183012754', 17),
+(120, 'Elizabeth Aprilia Harahap', '0895803936134', 18),
+(121, 'Sri Ayu Putri Cahaya Ningsi Maridi', '085242266442', 18),
+(122, 'Cendy Merry Tumbelaka', '089698216216', 18),
+(123, 'Pieter Henky Boas Ratulangie Palenewen', '082292000957', 18),
+(124, 'Moh. Arifin Muliling', '082292925125', 18),
+(125, 'Farhan Adrian Putra Wongkar', '085242046262', 18),
+(126, 'Stivano Farlan J Komaling', '085241013632', 18),
+(127, 'Jade Kathrin Ratulangi', '083131346623', 19),
+(128, 'Marcello Franscisco Mandagi', '089512218783', 19),
+(129, 'Martina Tatjana Anouschka Tielemans Ratulangi', '0895325839038', 19),
+(130, 'Priska Sarayar', '085176744372', 19),
+(131, 'Magdalena Alfonsa Manoi', '089698121478', 19),
+(132, 'Samria Thalib', '085222741662', 19),
+(133, 'Siti Belinda Kandou', '085242401277', 19),
+(134, 'Gabrielah Maya Manolang', '085240577899', 20),
+(135, 'Axl Atlanta manumpil', '085298422727', 20),
+(136, 'Cindy Tasya Kaani', '089636064380', 20),
+(137, 'Novelya Friska Datangmanis', '089672754922', 20),
+(138, 'Margareth Mesianas Eklesiola Jacobus', '0895396492606', 20),
+(139, 'Nasril Ilham Putra Agule', '089695674570', 20),
+(140, 'Prisilia Jannet Pausther', '08974380320', 20),
+(141, 'Asmawati Sawotong', '0895323090605', 21),
+(142, 'Fithria Lukman', '081245674782', 21),
+(143, 'Gledis Prialffa Tenda', '082319115151', 21),
+(144, 'Laraswati Tuluki', '089539622478', 21),
+(145, 'Sayyed Rifki Haekal Lamato', '085776962872', 21),
+(146, 'Brigita Patria Juni Suatan', '085256077707', 21),
+(147, 'Clara Caroline Tertius', '082292919069', 21),
+(148, 'Frysca Anggelina Anggreina Manginteno', '089512724583', 22),
+(149, 'Jefry Refly Rumate', '085240629912', 22),
+(150, 'Meliska Eviany Raranta', '08971697918', 22),
+(151, 'Afnan Fachruddin Usman', '085397008409', 22),
+(152, 'Chesya Mouren Sambuaga', '082312991018', 22),
+(153, 'Denisa Praselia Tantu', '085656802783', 22),
+(154, 'Fahrul Ratuwalangon', '08991685705', 22),
+(155, 'Novita Enjelina Pontolondo', '087848069276', 23),
+(156, 'INTAN INRIANNA CHRISTIANI SIWU', '081244558098', 23),
+(157, 'Vivi Suketsi Badar', '0882022545553', 23),
+(158, 'Fino Priyanto', '087739743084', 23),
+(159, 'Triolius Lai\' Dadi\' Patandean', '082296964759', 23),
+(160, 'Firmansyah Usman', '081445811070', 23),
+(161, 'Humaira Miftahul Jannah Haras', '085960184002', 23),
+(162, 'Melki Lungan', '085179642350', 24),
+(163, 'Rosita Napu', '085256131422', 24),
+(164, 'Christin Natalia Tangkilisan', '089611051448', 24),
+(165, 'Intan Mamonto', '089505909982', 24),
+(166, 'Roy Rotinsulu', '08114311203', 24),
+(167, 'Tellya mawarsari behamtimbangen janis', '08987772390', 24),
+(168, 'Meisel christanti jocom', '082353405648', 24),
+(169, 'Shalomita Tirsa Sumangando', '0895329872464', 25),
+(170, 'Yunita Tulandi', '082393441358', 25),
+(171, 'Albert Karel Senaen', '085179511423', 25),
+(172, 'Prayshe Karyn Lelet', '0895802071524', 25),
+(173, 'Aprilliya Falasara Mewo', '081244363480', 25),
+(174, 'Ghiffari Gama Aulia Thaib', '081341433468', 25),
+(175, 'ANDI RISKI RAHMAN', '082395903707', 25),
+(176, 'Febryanti Berliana Dotulong', '081241922864', 26),
+(177, 'Kezia Oktaria Watung', '089631007301', 26),
+(178, 'Geraldy Adnan Putra Langkameri', '083121644531', 26),
+(179, 'Juli Jein Kaemung', '081917657442', 26),
+(180, 'Deybi Sisca Gurumias', '081355313010', 26),
+(181, 'Imanuel Alfiando Sambow', '089625104319', 26),
+(182, 'Karno Trianto Takumansang', '08999151719', 26),
+(183, 'Fence Wangka', '082345024696', 27),
+(184, 'Siti Hardiyanti Subaer', '08993899782', 27),
+(185, 'Yuni Lomboan', '081235374657', 27),
+(186, 'Jonathan Rafael Wariki', '085960184812', 27),
+(187, 'Dyah Laras Pitaloka', '085240351916', 27),
+(188, 'Filippo Endru Inzaghi Pasuhuk', '0895801114302', 27),
+(189, 'Maya Sari', '085397302654', 27),
+(190, 'Elma Wadani Firman', '081242203000', 28),
+(191, 'Jamaluddin', '082343669876', 28),
+(192, 'Dina Ekawati Hungopa', '089513094176', 28),
+(193, 'Dian Dinata Dianita Pandensolang', '085398564727', 28),
+(194, 'Joshua Ronaldo Leonar Golung', '089505544456', 28),
+(195, 'Stellah Sara Mayfie Manolong', '085256496949', 28),
+(196, 'Wiliam Reinhart Andaki', '085756880475', 28),
+(197, 'Nurul Istiyana', '081244947491', 29),
+(198, 'Marlein Inri Soputan', '085333399199', 29),
+(199, 'Joshua Nazario Faith Pontius', '089603227959', 29),
+(200, 'ANGELIA FRANSISCA SUNDAH', '0895395722202', 29),
+(201, 'Agus Brian Bee', '082188596423', 29),
+(202, 'Esly Edwin Bastian', '0895321038373', 29),
+(203, 'JONATHAN BILLYAM SITUMEANG', '082192901148', 29),
+(204, 'Aulia Rahmawaty Moo', '082195052723', 30),
+(205, 'Indra Michael Lisungan', '085157968847', 30),
+(206, 'Devi Mursid', '08134884096', 30),
+(207, 'Nur Mutiara Djanah Pola', '087815115299', 30),
+(208, 'Femmy Abdullatief', '085242448229', 30),
+(209, 'Nurhayanti Towuri', '089676649571', 30),
+(210, 'Djurnia Tumaloto', '089697995943', 30),
+(211, 'Regina Sadena Kiwol', '082194964498', 31),
+(212, 'Nabilla Sekar Arum', '0895397242771', 31),
+(213, 'Flitaschio Saiydina Darise', '085341972714', 31),
+(214, 'Veysi Sonya Sorongan', '082213222700', 31),
+(215, 'Deputra Mamisala', '088258388500', 31),
+(216, 'Oksan Tolip', '0895613311777', 31),
+(217, 'Tirta Amarta Ganape', '087856553847', 31),
+(218, 'Sri Wahyuni Siden', '082191109360', 32),
+(219, 'Verena Aurelia Katiandagho', '087840487644', 32),
+(220, 'Juliana Puteri Kaya', '087841221050', 32),
+(221, 'Endang Wijayanti', '082347524031', 32),
+(222, 'Laila Tekol', '082353407815', 32),
+(223, 'Zakiah Ui', '087840194999', 32),
+(224, 'Hafid Anom Kuncoro Putra', '089697164601', 32),
+(225, 'Sharon Ribka Berikang', '085240658352', 33),
+(226, 'Devi Safitri Hano', '0895330049904', 33),
+(227, 'Ivanna Tresnawati Sarindat', '081344225459', 33),
+(228, 'Vivi Yanti Cica Papona', '085242933481', 33),
+(229, 'Anastasia Rany Makanaung', '089525715959', 33),
+(230, 'Febriane Marshanda Belinda Putri Katoppo', '089695301078', 33),
+(231, 'Widya melli helda budiman', '082194030006', 33),
+(232, 'Khaidar Dzulfiqar Sugeha', '085256228227', 34),
+(233, 'Peggy Papona', '081230056588', 34),
+(234, 'Jeane Josefin Arundaa', '081351252705', 34),
+(235, 'Zulaiha Achmad', '08983823175', 34),
+(236, 'Nadillah Ahaya', '085823524836', 34),
+(237, 'Kesia Sontica Angie Loho', '0895619233409', 34),
+(238, 'Adisty Putri Syahbuddin', '081234933321', 34),
+(239, 'Naomi Seccylia Valentina Lalenoh', '085242978009', 35),
+(240, 'Precilia Fransisca winangun', '081356818801', 35),
+(241, 'Talita S Lonan', '0895334455554', 35),
+(242, 'Elsye Ketsyawati Kaparang', '082148138561', 35),
+(243, 'Freeska Jeynesti Nicolaas', '0882021206051', 35),
+(244, 'Neva Aurora Oehlers', '09529544131', 35),
+(245, 'AGUSTINTJE MAKAHANAP', '095801848198', 35),
+(246, 'Bunga Cantika Gobel', '087886629819', 36),
+(247, 'Fadisti Prameswari Hursan', '085756884493', 36),
+(248, 'Dewi Fortuna Cicilia thomas', '089529684423', 36),
+(249, 'Farha Kinanti Al Idrus', '085399558951', 36),
+(250, 'Efendy M Hamzah', '0895802782700', 36),
+(251, 'Stephanie Bonita Gabriela Carolus', '0895801557854', 36),
+(252, 'Nanda Pahude', '088801011300', 36),
+(253, 'Stevi Ribka Sahambangun', '085650860273', 37),
+(254, 'Carolus Christosel Fernando', '081243048280', 37),
+(255, 'Indra Gilardino Binndjaya', '088210492637', 37),
+(256, 'Muhammad Rizal Ramli', '081343735696', 37),
+(257, 'Brayen Sabatino Untu', '08132010102', 37),
+(258, 'Fitriany Sunaryo', '082192390718', 37),
+(259, 'Junianty Talita Tamasalang', '083133967007', 37),
+(260, 'Angelina Stevany Mare', '082347343696', 38),
+(261, 'Meyriska Cindy Horopu', '0895395404210', 38),
+(262, 'Andika Eka Putra Maaruf', '081341237886', 38),
+(263, 'Nindi Prasetiya W Maanaiya', '085299447380', 38),
+(264, 'Friska Ali', '081240271652', 38),
+(265, 'Engelhart Sofiansel Saselah', '081445807784', 38),
+(266, 'Adhan Yeremia Alhasni', '085397192322', 38),
+(267, 'Owvler Jefersen Sinaulan', '08999204667', 38),
+(268, 'Veinny E Pirasat', '085256840887', 39),
+(269, 'Nalaratipinatatanda', '082194879138', 39),
+(270, 'Rugaya Sonu', '085398635302', 39),
+(271, 'Novanti Loho', '088245633743', 39),
+(272, 'Grace Shallomita Novelia Thomas', '087856917972', 39),
+(273, 'Chkarolin Agata Ema Sasela', '087729474665', 39),
+(274, 'Alfira Matheos', '087755089495', 39),
+(275, 'Muhamad Ikbal Lamangga', '087846346142', 39),
+(276, 'Angely Milionita Barbalina Mayor', '082191772788', 40),
+(277, 'Stevany Lisa Christine Wongkar', '08999905111', 40),
+(278, 'Axelia Caroline Ratulangi', '081524783709', 40),
+(279, 'Debby Debora Salmon', '085283472894', 40),
+(280, 'Jerri Langi', '085933608462', 40),
+(281, 'Kartika Pajow', '085696153768', 40),
+(282, 'Lady Silvana Wongkar', '081340006022', 40);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tbl_wilayah`
 --
 
 CREATE TABLE `tbl_wilayah` (
-  `id` int UNSIGNED NOT NULL,
-  `kecamatan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `kelurahan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `lingkungan` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `kecamatan` varchar(100) NOT NULL,
+  `kelurahan` varchar(100) NOT NULL,
+  `lingkungan` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tbl_wilayah`
+-- Dumping data untuk tabel `tbl_wilayah`
 --
 
 INSERT INTO `tbl_wilayah` (`id`, `kecamatan`, `kelurahan`, `lingkungan`) VALUES
@@ -1723,18 +2952,18 @@ INSERT INTO `tbl_wilayah` (`id`, `kecamatan`, `kelurahan`, `lingkungan`) VALUES
 (504, 'WENANG', 'WENANG UTARA', 'LINGKUNGAN 6');
 
 --
--- Indexes for dumped tables
+-- Indeks untuk tabel yang dibuang
 --
 
 --
--- Indexes for table `tbl_admin`
+-- Indeks untuk tabel `tbl_admin`
 --
 ALTER TABLE `tbl_admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_admin_username` (`username`);
 
 --
--- Indexes for table `tbl_alokasi_wilayah`
+-- Indeks untuk tabel `tbl_alokasi_wilayah`
 --
 ALTER TABLE `tbl_alokasi_wilayah`
   ADD PRIMARY KEY (`id`),
@@ -1742,14 +2971,21 @@ ALTER TABLE `tbl_alokasi_wilayah`
   ADD KEY `fk_alokasi_ppl` (`ppl_id`);
 
 --
--- Indexes for table `tbl_koseka`
+-- Indeks untuk tabel `tbl_hasil_kunjungan`
+--
+ALTER TABLE `tbl_hasil_kunjungan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_hasil_kunjungan_laporan` (`laporan_id`);
+
+--
+-- Indeks untuk tabel `tbl_koseka`
 --
 ALTER TABLE `tbl_koseka`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_koseka_nama` (`nama_koseka`);
 
 --
--- Indexes for table `tbl_laporan`
+-- Indeks untuk tabel `tbl_laporan`
 --
 ALTER TABLE `tbl_laporan`
   ADD PRIMARY KEY (`id`),
@@ -1757,21 +2993,14 @@ ALTER TABLE `tbl_laporan`
   ADD KEY `idx_laporan_wilayah` (`kecamatan`,`kelurahan`,`nomor_lingkungan`);
 
 --
--- Indexes for table `tbl_hasil_kunjungan`
---
-ALTER TABLE `tbl_hasil_kunjungan`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_hasil_kunjungan_laporan` (`laporan_id`);
-
---
--- Indexes for table `tbl_pml`
+-- Indeks untuk tabel `tbl_pml`
 --
 ALTER TABLE `tbl_pml`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_pml_nama` (`nama_pml`);
 
 --
--- Indexes for table `tbl_ppl`
+-- Indeks untuk tabel `tbl_ppl`
 --
 ALTER TABLE `tbl_ppl`
   ADD PRIMARY KEY (`id`),
@@ -1779,83 +3008,83 @@ ALTER TABLE `tbl_ppl`
   ADD KEY `fk_ppl_pml` (`pml_id`);
 
 --
--- Indexes for table `tbl_wilayah`
+-- Indeks untuk tabel `tbl_wilayah`
 --
 ALTER TABLE `tbl_wilayah`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_wilayah` (`kecamatan`,`kelurahan`,`lingkungan`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `tbl_admin`
+-- AUTO_INCREMENT untuk tabel `tbl_admin`
 --
 ALTER TABLE `tbl_admin`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `tbl_alokasi_wilayah`
+-- AUTO_INCREMENT untuk tabel `tbl_alokasi_wilayah`
 --
 ALTER TABLE `tbl_alokasi_wilayah`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=710;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=710;
 
 --
--- AUTO_INCREMENT for table `tbl_koseka`
---
-ALTER TABLE `tbl_koseka`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT for table `tbl_laporan`
---
-ALTER TABLE `tbl_laporan`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `tbl_hasil_kunjungan`
+-- AUTO_INCREMENT untuk tabel `tbl_hasil_kunjungan`
 --
 ALTER TABLE `tbl_hasil_kunjungan`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
--- AUTO_INCREMENT for table `tbl_pml`
+-- AUTO_INCREMENT untuk tabel `tbl_koseka`
+--
+ALTER TABLE `tbl_koseka`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT untuk tabel `tbl_laporan`
+--
+ALTER TABLE `tbl_laporan`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=112;
+
+--
+-- AUTO_INCREMENT untuk tabel `tbl_pml`
 --
 ALTER TABLE `tbl_pml`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
--- AUTO_INCREMENT for table `tbl_ppl`
+-- AUTO_INCREMENT untuk tabel `tbl_ppl`
 --
 ALTER TABLE `tbl_ppl`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=283;
 
 --
--- AUTO_INCREMENT for table `tbl_wilayah`
+-- AUTO_INCREMENT untuk tabel `tbl_wilayah`
 --
 ALTER TABLE `tbl_wilayah`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=505;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=505;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `tbl_alokasi_wilayah`
+-- Ketidakleluasaan untuk tabel `tbl_alokasi_wilayah`
 --
 ALTER TABLE `tbl_alokasi_wilayah`
   ADD CONSTRAINT `fk_alokasi_ppl` FOREIGN KEY (`ppl_id`) REFERENCES `tbl_ppl` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_alokasi_wilayah` FOREIGN KEY (`wilayah_id`) REFERENCES `tbl_wilayah` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_hasil_kunjungan`
+-- Ketidakleluasaan untuk tabel `tbl_hasil_kunjungan`
 --
 ALTER TABLE `tbl_hasil_kunjungan`
   ADD CONSTRAINT `fk_hasil_kunjungan_laporan` FOREIGN KEY (`laporan_id`) REFERENCES `tbl_laporan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `tbl_ppl`
+-- Ketidakleluasaan untuk tabel `tbl_ppl`
 --
 ALTER TABLE `tbl_ppl`
   ADD CONSTRAINT `fk_ppl_pml` FOREIGN KEY (`pml_id`) REFERENCES `tbl_pml` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
