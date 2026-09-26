@@ -1,0 +1,30 @@
+# Pemasangan Petugas Revisit SE2026
+
+## Urutan (penting)
+1. **Backup database** lewat phpMyAdmin (Export) terlebih dahulu.
+2. Di phpMyAdmin, pilih database `koth7791_lapor-belum-sensus` → tab **Import** →
+   unggah `sql/migrasi_petugas_revisit_se2026.sql` → Go.
+3. Setelah itu baru unggah/timpa file PHP berikut ke hosting:
+   - `config/fontte.php`, `config/periode.php` (baru)
+   - `includes/petugas_lib.php` (baru), `includes/admin_ui.php` (baru), `includes/navbar.php`
+   - `simpan.php`, `petugas.php`
+   - `admin/dashboard.php`, `admin/export.php`, `admin/petugas_revisit.php` (baru), `admin/kirim_notifikasi.php` (baru)
+
+   Kode baru membaca kolom `tbl_laporan.periode`, jadi SQL harus dijalankan lebih dulu.
+
+## Setelah terpasang
+- Laporan warga yang baru masuk otomatis bertanda **REVISIT**, dan WA dikirim ke PPL, PML, serta
+  KOSEKA revisit di wilayah tersebut.
+- Semua laporan lama bertanda **SENSUS** dan tetap menampilkan petugas pendataan lama.
+- Menu **Petugas Revisit** dipakai untuk mengisi nomor HP petugas yang masih dummy (08887654811).
+- Tombol **Alihkan ke Revisit** pada laporan SENSUS dipakai untuk memindahkan laporan ke petugas
+  revisit sekaligus mengirim WA.
+- Untuk kembali memakai petugas pendataan lama, ubah `PERIODE_AKTIF` di `config/periode.php` menjadi `'SENSUS'`.
+
+## Catatan
+- Skrip SQL kompatibel dengan **MySQL 5.7/8.x** dan **MariaDB** (sudah diuji di MySQL 8.0 dan MariaDB).
+- Bila impor sebelumnya gagal di tengah jalan, cukup impor ulang skrip ini. Tidak perlu menghapus apa pun.
+- Menjalankan ulang skrip SQL akan mengisi ulang tabel `*_revisit` dari Excel. Nomor HP yang sudah
+  diedit lewat admin akan hilang.
+- `daftar_petugas_revisit_hasil_olah.csv` berisi daftar PPL dan PML revisit beserta nomor yang dipakai,
+  untuk dicek manual.

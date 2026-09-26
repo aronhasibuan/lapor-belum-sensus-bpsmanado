@@ -55,8 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($pdo)) {
             // Jika koneksi menggunakan PDO
-            $sql = "INSERT INTO tbl_laporan (nama_pelapor, no_telepon, kecamatan, kelurahan, nomor_lingkungan, catatan, waktu_pendataan, latitude, longitude, status) 
-                    VALUES (:nama_pelapor, :no_telepon, :kecamatan, :kelurahan, :nomor_lingkungan, :catatan, :waktu_pendataan, :latitude, :longitude, 'Belum Ditindaklanjuti')";
+            // Kolom periode menandai laporan ini ditangani petugas SENSUS atau REVISIT.
+            $sql = "INSERT INTO tbl_laporan (nama_pelapor, no_telepon, kecamatan, kelurahan, nomor_lingkungan, catatan, waktu_pendataan, latitude, longitude, status, periode) 
+                    VALUES (:nama_pelapor, :no_telepon, :kecamatan, :kelurahan, :nomor_lingkungan, :catatan, :waktu_pendataan, :latitude, :longitude, 'Belum Ditindaklanjuti', :periode)";
 
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -68,20 +69,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':catatan'          => $catatan,
                 ':waktu_pendataan'  => $waktu_pendataan,
                 ':latitude'         => $latitude,
-                ':longitude'        => $longitude
+                ':longitude'        => $longitude,
+                ':periode'          => PERIODE_AKTIF,
             ]);
             $report_inserted_id = (int) $pdo->lastInsertId();
         } elseif (isset($conn) || isset($koneksi)) {
             // Jika koneksi menggunakan MySQLi
             $db = isset($conn) ? $conn : $koneksi;
-            $stmt = $db->prepare("INSERT INTO tbl_laporan (nama_pelapor, no_telepon, kecamatan, kelurahan, nomor_lingkungan, catatan, waktu_pendataan, latitude, longitude, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Belum Ditindaklanjuti')");
-            $stmt->bind_param("sssssssss", $nama_pelapor, $no_telepon, $kecamatan, $kelurahan, $nomor_lingkungan, $catatan, $waktu_pendataan, $latitude, $longitude);
+            $periode_aktif = PERIODE_AKTIF;
+            $stmt = $db->prepare("INSERT INTO tbl_laporan (nama_pelapor, no_telepon, kecamatan, kelurahan, nomor_lingkungan, catatan, waktu_pendataan, latitude, longitude, status, periode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Belum Ditindaklanjuti', ?)");
+            $stmt->bind_param("ssssssssss", $nama_pelapor, $no_telepon, $kecamatan, $kelurahan, $nomor_lingkungan, $catatan, $waktu_pendataan, $latitude, $longitude, $periode_aktif);
             $stmt->execute();
             $report_inserted_id = (int) $db->insert_id;
         }
 
         // Laporan sudah aman tersimpan di titik ini.
-        $_SESSION['pesan_sukses'] = "Laporan berhasil terkirim! Petugas sensus wilayah Anda akan segera menghubungi atau mendatangi lokasi sesuai jadwal.";
+        $_SESSION['pesan_sukses'] = "Laporan berhasil terkirim! Petugas wilayah Anda akan segera menghubungi atau mendatangi lokasi sesuai jadwal.";
     } catch (Exception $e) {
         // Detail teknis tidak ditampilkan ke publik, cukup dicatat di log server.
         error_log('[simpan.php] Gagal menyimpan laporan: ' . $e->getMessage());
@@ -106,7 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'catatan' => $catatan,
                 'latitude' => $latitude,
                 'longitude' => $longitude,
-            ]);
+            ], PERIODE_AKTIF);
+
+            notifikasi_log_simpan($pdo, $report_inserted_id, PERIODE_AKTIF, $notify_result);
 
             if (!empty($notify_result['disabled'])) {
                 $_SESSION['pesan_sukses'] = "Laporan berhasil terkirim. Notifikasi WhatsApp belum aktif karena token API belum diatur.";

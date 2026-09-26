@@ -28,6 +28,20 @@ $admin_nama = $_SESSION['admin_nama'] ?? 'Petugas Admin';
         <div class="collapse navbar-collapse" id="adminNavbarContent">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-3 mt-3 mt-lg-0">
 
+                <?php $nav_file = basename($_SERVER['PHP_SELF']); ?>
+                <li class="nav-item">
+                    <a href="dashboard.php" class="nav-link small d-flex align-items-center gap-1 <?= $nav_file === 'dashboard.php' ? 'text-white fw-semibold' : 'text-white-50'; ?>">
+                        <i class="bi bi-speedometer2 text-info"></i>
+                        <span>Dashboard Laporan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="petugas_revisit.php" class="nav-link small d-flex align-items-center gap-1 <?= $nav_file === 'petugas_revisit.php' ? 'text-white fw-semibold' : 'text-white-50'; ?>">
+                        <i class="bi bi-people-fill" style="color:#b99cf0;"></i>
+                        <span>Petugas Revisit</span>
+                    </a>
+                </li>
+
                 <!-- Pintasan Lihat Form Warga -->
                 <li class="nav-item">
                     <a href="../index.php" target="_blank" class="nav-link text-white-50 small d-flex align-items-center gap-1 hover-link">

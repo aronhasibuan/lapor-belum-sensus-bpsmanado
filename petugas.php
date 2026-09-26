@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $page_title = "Laporan Follow Up Masyarakat Belum Didata";
 require_once __DIR__ . '/includes/header.php';
 
-$laporanStmt = $pdo->query("SELECT id, nama_pelapor, kecamatan, kelurahan, nomor_lingkungan, status, waktu_pendataan FROM tbl_laporan WHERE status = 'Belum Ditindaklanjuti' ORDER BY id DESC");
+$laporanStmt = $pdo->query("SELECT id, nama_pelapor, kecamatan, kelurahan, nomor_lingkungan, status, waktu_pendataan, periode FROM tbl_laporan WHERE status = 'Belum Ditindaklanjuti' ORDER BY id DESC");
 $laporanList = $laporanStmt->fetchAll();
 ?>
 
@@ -98,7 +98,7 @@ $laporanList = $laporanStmt->fetchAll();
                                 <option value="">-- Pilih laporan belum ditindaklanjuti --</option>
                                 <?php foreach ($laporanList as $laporan): ?>
                                     <option value="<?= (int)$laporan['id']; ?>">
-                                        <?= htmlspecialchars('#' . $laporan['id'] . ' - ' . $laporan['nama_pelapor'] . ' | ' . $laporan['kecamatan'] . ' / ' . $laporan['kelurahan'] . ' / ' . $laporan['nomor_lingkungan']); ?>
+                                        <?= htmlspecialchars('#' . $laporan['id'] . (($laporan['periode'] ?? '') === 'REVISIT' ? ' [Revisit]' : ' [Sensus]') . ' - ' . $laporan['nama_pelapor'] . ' | ' . $laporan['kecamatan'] . ' / ' . $laporan['kelurahan'] . ' / ' . $laporan['nomor_lingkungan']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>

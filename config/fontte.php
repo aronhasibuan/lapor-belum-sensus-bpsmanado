@@ -11,6 +11,9 @@ $fontte_api_key = trim((string) $fontte_api_key);
 $fontte_base_url = 'https://api.fonnte.com';
 $fontte_enabled = $fontte_api_key !== '';
 
+require_once __DIR__ . '/periode.php';
+require_once __DIR__ . '/../includes/petugas_lib.php';
+
 function fonnte_normalize_phone($phone)
 {
     $digits = preg_replace('/\D+/', '', (string) $phone);
@@ -30,31 +33,21 @@ function fonnte_normalize_phone($phone)
     return $digits;
 }
 
+/** Dipertahankan untuk kompatibilitas: pemetaan KOSEKA sensus per kecamatan. */
 function fonnte_get_koseka_ids_for_kecamatan($kecamatan)
 {
-    $normalized = strtoupper(trim((string) $kecamatan));
-
-    $map = [
-        'MALALAYANG' => [1],
-        'SARIO' => [2],
-        'WANEA' => [3],
-        'WENANG' => [4],
-        'TIKALA' => [5],
-        'MAPANGET' => [6, 7],
-        'SINGKIL' => [8],
-        'TUMINTING' => [9],
-        'BUNAKEN' => [10],
-        'BUNAKEN KEPULAUAN' => [10],
-        'PAAL DUA' => [11],
-    ];
-
-    return $map[$normalized] ?? [];
+    return koseka_sensus_ids_for_kecamatan($kecamatan);
 }
 
+/**
+ * Menghapus kontak ganda berdasarkan nomor HP.
+ * Bila beberapa petugas berbagi nomor cadangan (dummy), pesan cukup dikirim
+ * sekali, tetapi nama semua petugas yang dituju dicatat di 'untuk' supaya
+ * pemegang nomor cadangan tahu harus meneruskan ke siapa.
+ */
 function fonnte_unique_contacts(array $contacts)
 {
     $result = [];
-    $seen = [];
 
     foreach ($contacts as $contact) {
         $phone = fonnte_normalize_phone($contact['phone'] ?? '');
@@ -63,19 +56,28 @@ function fonnte_unique_contacts(array $contacts)
             continue;
         }
 
-        $key = strtolower($phone);
+        $name = trim((string) ($contact['name'] ?? 'Petugas'));
+        $role = trim((string) ($contact['role'] ?? ''));
+        $dummy = !empty($contact['dummy']);
 
-        if (!isset($seen[$key])) {
-            $seen[$key] = true;
-            $result[] = [
-                'name' => trim((string) ($contact['name'] ?? 'Petugas')),
+        if (!isset($result[$phone])) {
+            $result[$phone] = [
+                'name' => $name,
                 'phone' => $phone,
-                'role' => trim((string) ($contact['role'] ?? '')),
+                'role' => $role,
+                'dummy' => $dummy,
+                'untuk' => $dummy ? [$role . ' ' . $name] : [],
             ];
+        } elseif ($dummy || $result[$phone]['dummy']) {
+            $result[$phone]['dummy'] = true;
+            $label = $role . ' ' . $name;
+            if (!in_array($label, $result[$phone]['untuk'], true)) {
+                $result[$phone]['untuk'][] = $label;
+            }
         }
     }
 
-    return $result;
+    return array_values($result);
 }
 
 function fonnte_send_message($target_phone, $message)
@@ -91,6 +93,13 @@ function fonnte_send_message($target_phone, $message)
     }
 
     $target = fonnte_normalize_phone($target_phone);
+
+    // Mode uji: set environment variable FONNTE_DRY_RUN=1 supaya pesan
+    // tidak benar-benar dikirim (dipakai saat pengujian di lokal).
+    if (getenv('FONNTE_DRY_RUN') === '1' && $target !== '') {
+        @file_put_contents(sys_get_temp_dir() . '/fonnte_dry_run.log', date('c') . " TO {$target}\n{$message}\n-----\n", FILE_APPEND);
+        return ['ok' => true, 'status' => 'dry_run', 'message' => 'Dry run ke ' . $target, 'reason' => '', 'http_code' => 200, 'body' => ''];
+    }
 
     if ($target === '') {
         return [
@@ -199,7 +208,7 @@ function fonnte_build_report_message(array $contact, array $d)
     $penutup = [
         'PPL' => "*TINDAK LANJUT*\n"
             . "1. Hubungi pelapor lebih dulu untuk memastikan waktu kunjungan.\n"
-            . "2. Lakukan pendataan sesuai prosedur SE2026.\n"
+            . "2. Lakukan " . ($d['periode'] === 'REVISIT' ? 'kunjungan revisit' : 'pendataan') . " sesuai prosedur SE2026.\n"
             . "3. Laporkan hasilnya ke PML setelah selesai.\n\n"
             . "Mohon ditindaklanjuti maksimal 2x24 jam sejak pesan ini diterima.",
         'PML' => "*TINDAK LANJUT*\n"
@@ -212,9 +221,19 @@ function fonnte_build_report_message(array $contact, array $d)
 
     $lines = [];
     $lines[] = "*LAPORAN WARGA BELUM TERSENSUS*";
-    $lines[] = "_Sensus Ekonomi 2026 - BPS Kota Manado_";
+    $lines[] = $d['periode'] === 'REVISIT'
+        ? "_Revisit Sensus Ekonomi 2026 - BPS Kota Manado_"
+        : "_Sensus Ekonomi 2026 - BPS Kota Manado_";
     $lines[] = "";
-    $lines[] = $pembuka[$role] ?? "Halo {$sapaan}, ada laporan warga belum didata.";
+    if (!empty($contact['dummy'])) {
+        $lines[] = "Halo, pesan ini dikirim ke nomor cadangan karena nomor WA petugas berikut belum tersedia:";
+        foreach ((array) ($contact['untuk'] ?? []) as $untuk) {
+            $lines[] = "- " . $untuk;
+        }
+        $lines[] = "Mohon diteruskan ke petugas yang bersangkutan.";
+    } else {
+        $lines[] = $pembuka[$role] ?? "Halo {$sapaan}, ada laporan warga belum didata.";
+    }
     $lines[] = "";
 
     $lines[] = "*DATA LAPORAN*";
@@ -251,15 +270,23 @@ function fonnte_build_report_message(array $contact, array $d)
     return implode("\n", $lines);
 }
 
-function fonnte_notify_report_submission(PDO $pdo, array $report_data)
+/**
+ * Mengirim notifikasi laporan ke petugas wilayah.
+ * $periode: 'REVISIT' atau 'SENSUS'. Default mengikuti PERIODE_AKTIF (config/periode.php).
+ * Bila wilayah tidak punya petugas sama sekali, pesan dikirim ke nomor cadangan.
+ */
+function fonnte_notify_report_submission(PDO $pdo, array $report_data, $periode = null)
 {
     global $fontte_enabled;
+
+    $periode = periode_valid($periode ?? '') ?: PERIODE_AKTIF;
 
     if (!$fontte_enabled) {
         return [
             'sent' => 0,
             'total' => 0,
             'disabled' => true,
+            'periode' => $periode,
             'message' => 'Fonnte belum aktif karena token API belum diisi.',
         ];
     }
@@ -275,66 +302,18 @@ function fonnte_notify_report_submission(PDO $pdo, array $report_data)
     $latitude    = trim((string) ($report_data['latitude'] ?? ''));
     $longitude   = trim((string) ($report_data['longitude'] ?? ''));
 
-    $contacts = [];
+    $petugas = petugas_wilayah($pdo, $periode, $kecamatan, $kelurahan, $lingkungan);
 
-    $ppl_sql = "
-        SELECT DISTINCT p.nama_ppl AS name, p.nomor_hp_ppl AS phone, 'PPL' AS role
-        FROM tbl_wilayah w
-        JOIN tbl_alokasi_wilayah aw ON aw.wilayah_id = w.id
-        JOIN tbl_ppl p ON p.id = aw.ppl_id
-        WHERE UPPER(TRIM(w.kecamatan)) = UPPER(TRIM(:kecamatan))
-          AND UPPER(TRIM(w.kelurahan)) = UPPER(TRIM(:kelurahan))
-          AND UPPER(TRIM(w.lingkungan)) = UPPER(TRIM(:lingkungan))
-        ORDER BY p.nama_ppl ASC
-    ";
-
-    $ppl_stmt = $pdo->prepare($ppl_sql);
-    $ppl_stmt->execute([
-        ':kecamatan' => $kecamatan,
-        ':kelurahan' => $kelurahan,
-        ':lingkungan' => $lingkungan,
-    ]);
-
-    while ($row = $ppl_stmt->fetch(PDO::FETCH_ASSOC)) {
-        $contacts[] = $row;
+    // Wilayah tanpa PPL/PML (mis. lingkungan baru): tetap kirim ke nomor cadangan.
+    if (empty($petugas['PPL'])) {
+        $petugas['PPL'][] = ['name' => 'Wilayah ' . $kelurahan . ' ' . $lingkungan, 'phone' => NOMOR_WA_DUMMY, 'role' => 'PPL', 'dummy' => true];
+    }
+    if (empty($petugas['PML'])) {
+        $petugas['PML'][] = ['name' => 'Wilayah ' . $kelurahan . ' ' . $lingkungan, 'phone' => NOMOR_WA_DUMMY, 'role' => 'PML', 'dummy' => true];
     }
 
-    $pml_sql = "
-        SELECT DISTINCT pm.nama_pml AS name, pm.nomor_hp_pml AS phone, 'PML' AS role
-        FROM tbl_wilayah w
-        JOIN tbl_alokasi_wilayah aw ON aw.wilayah_id = w.id
-        JOIN tbl_ppl p ON p.id = aw.ppl_id
-        JOIN tbl_pml pm ON pm.id = p.pml_id
-        WHERE UPPER(TRIM(w.kecamatan)) = UPPER(TRIM(:kecamatan))
-          AND UPPER(TRIM(w.kelurahan)) = UPPER(TRIM(:kelurahan))
-          AND UPPER(TRIM(w.lingkungan)) = UPPER(TRIM(:lingkungan))
-        ORDER BY pm.nama_pml ASC
-    ";
-
-    $pml_stmt = $pdo->prepare($pml_sql);
-    $pml_stmt->execute([
-        ':kecamatan' => $kecamatan,
-        ':kelurahan' => $kelurahan,
-        ':lingkungan' => $lingkungan,
-    ]);
-
-    while ($row = $pml_stmt->fetch(PDO::FETCH_ASSOC)) {
-        $contacts[] = $row;
-    }
-
-    $koseka_ids = fonnte_get_koseka_ids_for_kecamatan($kecamatan);
-
-    if (!empty($koseka_ids)) {
-        $placeholders = implode(',', array_fill(0, count($koseka_ids), '?'));
-        $koseka_sql = "SELECT id, nama_koseka AS name, nomor_hp_koseka AS phone, 'KOSEKA' AS role FROM tbl_koseka WHERE id IN ($placeholders)";
-        $koseka_stmt = $pdo->prepare($koseka_sql);
-        $koseka_stmt->execute($koseka_ids);
-
-        while ($row = $koseka_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $contacts[] = $row;
-        }
-    }
-
+    // Urutan penting: PPL dulu, lalu PML, lalu KOSEKA.
+    $contacts = array_merge($petugas['PPL'], $petugas['PML'], $petugas['KOSEKA']);
     $unique_contacts = fonnte_unique_contacts($contacts);
 
     if (empty($unique_contacts)) {
@@ -342,6 +321,7 @@ function fonnte_notify_report_submission(PDO $pdo, array $report_data)
             'sent' => 0,
             'total' => 0,
             'disabled' => false,
+            'periode' => $periode,
             'message' => 'Tidak ada kontak PPL, PML, atau KOSEKA yang cocok untuk wilayah ini.',
         ];
     }
@@ -369,6 +349,7 @@ function fonnte_notify_report_submission(PDO $pdo, array $report_data)
 
     foreach ($unique_contacts as $contact) {
         $message = fonnte_build_report_message($contact, [
+            'periode'      => $periode,
             'no_laporan'   => $no_laporan,
             'waktu_masuk'  => $waktu_masuk,
             'nama_pelapor' => $nama_pelapor,
@@ -387,6 +368,8 @@ function fonnte_notify_report_submission(PDO $pdo, array $report_data)
             'name' => $contact['name'],
             'role' => $contact['role'],
             'phone' => $contact['phone'],
+            'dummy' => $contact['dummy'],
+            'untuk' => $contact['untuk'],
             'result' => $result,
         ];
 
@@ -402,11 +385,9 @@ function fonnte_notify_report_submission(PDO $pdo, array $report_data)
         'sent' => $sent,
         'total' => count($unique_contacts),
         'disabled' => false,
+        'periode' => $periode,
         'results' => $results,
         'failed' => $failed,
         'message' => 'Pengiriman notifikasi selesai.',
     ];
 }
-
-// Template konfigurasi default: isi token Anda di bawah ini jika tidak memakai environment variable.
-// define('FONTTE_API_KEY', 'PASTE_YOUR_FONNTE_API_KEY_HERE');
