@@ -83,8 +83,15 @@ foreach ($stmt->fetchAll() as $row) {
     $row['petugas'] = petugas_laporan($pdo, $row);
 
     if ($needle !== '') {
-        $haystack = [$row['nama_pelapor'], $row['no_telepon'], $row['kecamatan'], $row['kelurahan'],
-            $row['nomor_lingkungan'], $row['waktu_pendataan'], $row['catatan']];
+        $haystack = [
+            $row['nama_pelapor'],
+            $row['no_telepon'],
+            $row['kecamatan'],
+            $row['kelurahan'],
+            $row['nomor_lingkungan'],
+            $row['waktu_pendataan'],
+            $row['catatan']
+        ];
         foreach ($row['petugas'] as $list) {
             foreach ($list as $p) {
                 $haystack[] = $p['name'];
@@ -276,6 +283,93 @@ admin_ui_styles();
     </div>
 
     <!-- Tabel Laporan -->
+    <style>
+        /* Tabel ringkas: muat selebar layar, detail lengkap ada di baris "Detail" */
+        .lap-wrap {
+            overflow-x: auto;
+        }
+
+        .table-lap {
+            table-layout: fixed;
+            width: 100%;
+            min-width: 960px;
+            font-size: .875rem;
+        }
+
+        .table-lap th {
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            white-space: nowrap;
+        }
+
+        .table-lap td {
+            vertical-align: top;
+            padding-top: .6rem;
+            padding-bottom: .6rem;
+        }
+
+        .table-lap .lap-sub {
+            font-size: .75rem;
+            color: #6c757d;
+            line-height: 1.35;
+        }
+
+        .table-lap .lap-catatan {
+            font-size: .75rem;
+            color: #6c757d;
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chip-petugas {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            max-width: 100%;
+            padding: 1px 7px 1px 2px;
+            margin: 0 4px 3px 0;
+            border-radius: 999px;
+            font-size: .75rem;
+            line-height: 1.5;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chip-petugas b {
+            flex: none;
+            font-size: .62rem;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .35);
+        }
+
+        .chip-petugas:hover {
+            filter: brightness(.93);
+        }
+    </style>
+    <?php
+    // Pecah "dd/mm/yyyy - 08.00 - 09.00 WITA" menjadi tanggal & jam
+    $pecah_jadwal = function ($w) {
+        $w = trim((string) $w);
+        $pos = strpos($w, ' - ');
+        return $pos === false ? [$w, ''] : [substr($w, 0, $pos), substr($w, $pos + 3)];
+    };
+    $chip_petugas = function (array $p, $periode) {
+        $role = strtoupper($p['role'] ?? '');
+        $cls = 'chip-petugas badge-' . strtolower($role) . '-' . (strtoupper($periode) === 'REVISIT' ? 'revisit' : 'sensus') . (!empty($p['dummy']) ? ' badge-dummy' : '');
+        $wa = wa_link_number($p['phone'] ?? '');
+        $tip = $role . ' ' . ($p['name'] ?? '') . ($wa ? ' · ' . $p['phone'] : '') . (!empty($p['dummy']) ? ' (nomor dummy)' : '');
+        $inner = '<b>' . h($role === 'KOSEKA' ? 'KSK' : $role) . '</b>' . h($p['name'] ?? '-');
+        return $wa
+            ? '<a class="' . $cls . '" href="https://wa.me/' . h($wa) . '" target="_blank" rel="noopener noreferrer" title="' . h($tip) . '">' . $inner . '</a>'
+            : '<span class="' . $cls . '" title="' . h($tip) . '">' . $inner . '</span>';
+    };
+    ?>
     <div class="card card-custom">
         <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
@@ -294,30 +388,32 @@ admin_ui_styles();
                 <i class="bi bi-file-earmark-excel"></i> Unduh Excel / CSV
             </a>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 text-nowrap">
-                <thead class="table-light text-secondary small">
+        <div class="lap-wrap">
+            <table class="table table-hover mb-0 table-lap">
+                <colgroup>
+                    <col style="width: 70px;">
+                    <col style="width: 20%;">
+                    <col style="width: 19%;">
+                    <col style="width: 115px;">
+                    <col>
+                    <col style="width: 150px;">
+                    <col style="width: 118px;">
+                </colgroup>
+                <thead class="table-light text-secondary">
                     <tr>
-                        <th class="text-center" style="width: 50px;">No</th>
-                        <th>Periode</th>
-                        <th>Waktu Lapor</th>
-                        <th>Nama Pelapor</th>
-                        <th>Kontak (WA)</th>
-                        <th>Wilayah (Kec/Kel/Ling)</th>
-                        <th>Catatan / Petunjuk</th>
-                        <th>Jadwal Kunjungan</th>
-                        <th style="min-width: 230px;">Petugas (PPL / PML)</th>
-                        <th style="min-width: 200px;">Koseka</th>
-                        <th class="text-center">Notifikasi WA</th>
-                        <th class="text-center">Titik Lokasi</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center" style="width: 160px;">Aksi</th>
+                        <th class="text-center">No</th>
+                        <th>Pelapor</th>
+                        <th>Wilayah</th>
+                        <th>Jadwal</th>
+                        <th>Petugas</th>
+                        <th>Status</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($laporan_list)): ?>
                         <tr>
-                            <td colspan="14" class="text-center py-4 text-muted small">Belum ada data laporan masuk.</td>
+                            <td colspan="7" class="text-center py-4 text-muted small">Belum ada data laporan masuk.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($laporan_list as $index => $row): ?>
@@ -327,128 +423,87 @@ admin_ui_styles();
                             $wa = wa_link_number($row['no_telepon'] ?? '');
                             $pt = $row['petugas'];
                             $nf = $notif[(int) $row['id']] ?? null;
+                            $id = (int) $row['id'];
+                            [$jadwal_tgl, $jadwal_jam] = $pecah_jadwal($row['waktu_pendataan'] ?? '');
+                            $ling = preg_replace('/^LINGKUNGAN\s*/i', 'Ling. ', (string) ($row['nomor_lingkungan'] ?? '-'));
+                            $semua_petugas = array_merge($pt['PPL'], $pt['PML'], $pt['KOSEKA']);
                             ?>
                             <tr class="row-periode-<?= strtolower($periode); ?>">
-                                <td class="text-center text-muted small"><?= $index + 1; ?></td>
-
-                                <td><?= badge_periode($periode); ?><div class="small text-muted mt-1">#<?= (int) $row['id']; ?></div></td>
-
-                                <td><small class="text-muted"><?= isset($row['created_at']) ? date('d/m/Y H:i', strtotime($row['created_at'])) : '-'; ?></small></td>
-
-                                <td class="fw-semibold text-dark"><?= h($row['nama_pelapor'] ?? '-'); ?></td>
-
-                                <td>
-                                    <a href="https://wa.me/<?= h($wa); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success py-1 px-2 fw-semibold d-inline-flex align-items-center gap-1">
-                                        <i class="bi bi-whatsapp"></i> <?= h($row['no_telepon'] ?? '-'); ?>
-                                    </a>
+                                <td class="text-center">
+                                    <div class="fw-semibold"><?= $index + 1; ?></div>
+                                    <div class="lap-sub">#<?= $id; ?></div>
+                                    <?php if ($periode === 'REVISIT'): ?>
+                                        <span class="badge badge-periode-revisit mt-1" style="font-size: .6rem;">REVISIT</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-periode-sensus mt-1" style="font-size: .6rem;">SENSUS</span>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td>
-                                    <div class="small">
-                                        <span class="badge bg-secondary-subtle text-secondary fw-semibold"><?= h($row['kecamatan'] ?? '-'); ?></span><br>
-                                        <span class="text-muted"><?= h($row['kelurahan'] ?? '-'); ?>, <?= h($row['nomor_lingkungan'] ?? '-'); ?></span>
-                                    </div>
+                                    <div class="fw-semibold text-dark text-break"><?= h($row['nama_pelapor'] ?? '-'); ?></div>
+                                    <?php if ($wa !== ''): ?>
+                                        <a href="https://wa.me/<?= h($wa); ?>" target="_blank" rel="noopener noreferrer" class="text-success text-decoration-none small fw-semibold">
+                                            <i class="bi bi-whatsapp"></i> <?= h($row['no_telepon']); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    <div class="lap-sub">Lapor <?= isset($row['created_at']) ? date('d/m/y H:i', strtotime($row['created_at'])) : '-'; ?></div>
                                 </td>
 
                                 <td>
+                                    <div class="fw-semibold text-break"><?= h($row['kelurahan'] ?? '-'); ?> <span class="fw-normal text-muted">· <?= h($ling); ?></span></div>
+                                    <div class="lap-sub"><?= h($row['kecamatan'] ?? '-'); ?></div>
                                     <?php if (!empty($row['catatan'])): ?>
-                                        <span class="badge bg-light text-dark border text-wrap text-start fst-italic" style="max-width: 160px;">
-                                            <i class="bi bi-card-text me-1 text-primary"></i><?= h($row['catatan']); ?>
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="text-muted small fst-italic">-</span>
+                                        <div class="lap-catatan" title="<?= h($row['catatan']); ?>"><i class="bi bi-card-text"></i> <?= h($row['catatan']); ?></div>
                                     <?php endif; ?>
                                 </td>
 
                                 <td>
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle py-1 px-2">
-                                        <i class="bi bi-clock me-1"></i><?= h($row['waktu_pendataan'] ?? '-'); ?>
-                                    </span>
+                                    <div class="fw-semibold"><?= h($jadwal_tgl ?: '-'); ?></div>
+                                    <div class="lap-sub"><?= h($jadwal_jam); ?></div>
                                 </td>
 
                                 <td>
-                                    <div class="d-flex flex-column gap-1 small" style="white-space: normal;">
-                                        <?php foreach (array_merge($pt['PPL'], $pt['PML']) as $p): ?>
-                                            <?= badge_petugas($p, $periode); ?>
-                                        <?php endforeach; ?>
-                                        <?php if (empty($pt['PPL']) && empty($pt['PML'])): ?>
-                                            <span class="text-danger small fst-italic">Wilayah belum punya petugas</span>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <div class="d-flex flex-column gap-1 small" style="white-space: normal;">
-                                        <?php foreach ($pt['KOSEKA'] as $p): ?>
-                                            <?= badge_petugas($p, $periode); ?>
-                                        <?php endforeach; ?>
-                                        <?php if (empty($pt['KOSEKA'])): ?><span class="text-muted fst-italic">-</span><?php endif; ?>
-                                    </div>
-                                </td>
-
-                                <td class="text-center small">
-                                    <?php if ($nf): ?>
-                                        <?php
-                                        $ok = $nf['terkirim'] === $nf['total'];
-                                        $tip = implode("\n", array_map(fn($d) => ($d['terkirim'] ? '✓ ' : '✗ ') . $d['peran'] . ' ' . $d['nama_petugas'] . ' (' . $d['nomor_hp'] . ')' . ($d['is_dummy'] ? ' [dummy]' : ''), $nf['detail']));
-                                        ?>
-                                        <span class="badge <?= $ok ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'; ?>" title="<?= h($tip); ?>" style="cursor: help;">
-                                            <i class="bi bi-whatsapp me-1"></i><?= $nf['terkirim']; ?>/<?= $nf['total']; ?> terkirim
-                                        </span>
-                                        <div class="text-muted mt-1" style="font-size: .7rem;">
-                                            ke petugas <?= $nf['periode'] === 'REVISIT' ? '<span class="text-revisit fw-semibold">revisit</span>' : 'sensus'; ?>
-                                            <?= $nf['dummy'] ? '· <span class="text-danger">' . $nf['dummy'] . ' dummy</span>' : ''; ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <span class="text-muted fst-italic" title="Laporan sebelum pencatatan log notifikasi diaktifkan">tidak tercatat</span>
+                                    <?php foreach ($semua_petugas as $p): ?><?= $chip_petugas($p, $periode); ?><?php endforeach; ?>
+                                    <?php if (empty($pt['PPL']) && empty($pt['PML'])): ?>
+                                        <div class="text-danger small fst-italic">Wilayah belum punya petugas</div>
                                     <?php endif; ?>
                                 </td>
 
-                                <td class="text-center">
-                                    <a href="https://www.google.com/maps?q=<?= h($row['latitude']); ?>,<?= h($row['longitude']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary py-1 px-2">
-                                        <i class="bi bi-geo-alt text-danger"></i> Peta
-                                    </a>
-                                </td>
-
-                                <td class="text-center">
+                                <td>
                                     <?php if ($is_selesai): ?>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle me-1"></i> Sudah Ditindaklanjuti</span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>Sudah</span>
                                     <?php else: ?>
-                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-hourglass-split me-1"></i> Belum Ditindaklanjuti</span>
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-hourglass-split me-1"></i>Belum</span>
                                     <?php endif; ?>
+
                                 </td>
 
                                 <td class="text-center">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a href="update_status.php?id=<?= (int) $row['id']; ?>&status=Sudah+Ditindaklanjuti"
-                                            class="btn <?= $is_selesai ? 'btn-success fw-semibold' : 'btn-outline-success'; ?>" title="Tandai Sudah Ditindaklanjuti">
-                                            <i class="bi bi-check2"></i> Sudah
-                                        </a>
-                                        <a href="update_status.php?id=<?= (int) $row['id']; ?>&status=Belum+Ditindaklanjuti"
-                                            class="btn <?= !$is_selesai ? 'btn-warning text-dark fw-semibold' : 'btn-outline-warning text-dark'; ?>" title="Tandai Belum Ditindaklanjuti">
-                                            <i class="bi bi-hourglass-split"></i> Belum
-                                        </a>
-                                        <a href="hapus.php?id=<?= (int) $row['id']; ?>" class="btn btn-outline-danger"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus data laporan ini?')" title="Hapus Laporan">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                    <div class="btn-group btn-group-sm mb-1" role="group">
+                                        <?php if ($is_selesai): ?>
+                                            <a href="update_status.php?id=<?= $id; ?>&status=Belum+Ditindaklanjuti" class="btn btn-outline-warning text-dark" title="Kembalikan ke Belum Ditindaklanjuti"><i class="bi bi-arrow-counterclockwise"></i></a>
+                                        <?php else: ?>
+                                            <a href="update_status.php?id=<?= $id; ?>&status=Sudah+Ditindaklanjuti" class="btn btn-success" title="Tandai Sudah Ditindaklanjuti"><i class="bi bi-check2"></i></a>
+                                        <?php endif; ?>
+                                        <a href="https://www.google.com/maps?q=<?= h($row['latitude']); ?>,<?= h($row['longitude']); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary" title="Lihat titik lokasi"><i class="bi bi-geo-alt text-danger"></i></a>
+                                        <a href="hapus.php?id=<?= $id; ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data laporan ini?')" title="Hapus Laporan"><i class="bi bi-trash"></i></a>
                                     </div>
-                                    <form method="POST" action="kirim_notifikasi.php" class="mt-1"
+                                    <form method="POST" action="kirim_notifikasi.php"
                                         onsubmit="return confirm(<?= h(json_encode($periode === 'SENSUS'
-                                            ? 'Alihkan laporan #' . $row['id'] . ' ke petugas REVISIT dan kirim WhatsApp ke PPL, PML, dan Koseka revisit wilayah ini?'
-                                            : 'Kirim ulang WhatsApp laporan #' . $row['id'] . ' ke petugas revisit wilayah ini?')); ?>)">
+                                                                        ? 'Alihkan laporan #' . $id . ' ke petugas REVISIT dan kirim WhatsApp ke PPL, PML, dan Koseka revisit wilayah ini?'
+                                                                        : 'Kirim ulang WhatsApp laporan #' . $id . ' ke petugas revisit wilayah ini?')); ?>)">
                                         <input type="hidden" name="csrf_token" value="<?= h($csrf); ?>">
-                                        <input type="hidden" name="id" value="<?= (int) $row['id']; ?>">
+                                        <input type="hidden" name="id" value="<?= $id; ?>">
                                         <input type="hidden" name="kembali" value="<?= h($query_string()); ?>">
                                         <?php if ($periode === 'SENSUS'): ?>
                                             <input type="hidden" name="aksi" value="alihkan">
-                                            <button type="submit" class="btn btn-sm w-100 badge-ppl-revisit border-0" title="Alihkan ke petugas revisit & kirim WA">
-                                                <i class="bi bi-arrow-repeat"></i> Alihkan ke Revisit
+                                            <button type="submit" class="btn btn-sm w-100 badge-ppl-revisit border-0" style="font-size: .72rem;" title="Alihkan ke petugas revisit & kirim WA">
+                                                <i class="bi bi-arrow-repeat"></i> Ke Revisit
                                             </button>
                                         <?php else: ?>
                                             <input type="hidden" name="aksi" value="ulang">
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary w-100" title="Kirim ulang WA ke petugas revisit">
-                                                <i class="bi bi-whatsapp"></i> Kirim Ulang WA
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary w-100" style="font-size: .72rem;" title="Kirim ulang WA ke petugas revisit">
+                                                <i class="bi bi-whatsapp"></i> Kirim Ulang
                                             </button>
                                         <?php endif; ?>
                                     </form>
@@ -462,17 +517,29 @@ admin_ui_styles();
     </div>
 
     <script>
-        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        } [c]));
 
         const redIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
         });
         const greenIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
         });
 
         const reports = <?= json_encode($map_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
@@ -498,10 +565,15 @@ admin_ui_styles();
                     <small class="d-block mb-2"><b>PML ${isRevisit ? 'Revisit' : 'Sensus'}:</b> ${esc(item.pml)}</small>
                     <span class="badge ${isDone ? 'bg-success' : 'bg-danger'}">${esc(item.status)}</span>
                 </div>`;
-                L.marker([item.lat, item.lng], { icon: isDone ? greenIcon : redIcon }).addTo(map).bindPopup(popup);
+                L.marker([item.lat, item.lng], {
+                    icon: isDone ? greenIcon : redIcon
+                }).addTo(map).bindPopup(popup);
                 bounds.push([item.lat, item.lng]);
             });
-            map.fitBounds(bounds, { padding: [30, 30], maxZoom: 15 });
+            map.fitBounds(bounds, {
+                padding: [30, 30],
+                maxZoom: 15
+            });
         }
     </script>
 
