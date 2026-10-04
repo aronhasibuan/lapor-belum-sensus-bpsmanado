@@ -13,9 +13,17 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit;
 }
 
+$fase = strtoupper(trim($_REQUEST['f_fase'] ?? $_REQUEST['fase'] ?? 'REVISIT_2'));
+if (!in_array($fase, ['REVISIT_1', 'REVISIT_2'], true)) {
+    $fase = 'REVISIT_2';
+}
+$fase_label = $fase === 'REVISIT_2' ? 'Revisit 2' : 'Revisit 1';
+$suffix_fase = $fase === 'REVISIT_2' ? '_2' : '';
+$alokasi_table = 'tbl_alokasi_wilayah_revisit' . $suffix_fase;
+
 $tabel = [
-    'ppl' => ['table' => 'tbl_ppl_revisit', 'nama' => 'nama_ppl', 'hp' => 'nomor_hp_ppl', 'label' => 'PPL'],
-    'pml' => ['table' => 'tbl_pml_revisit', 'nama' => 'nama_pml', 'hp' => 'nomor_hp_pml', 'label' => 'PML'],
+    'ppl' => ['table' => 'tbl_ppl_revisit' . $suffix_fase, 'nama' => 'nama_ppl', 'hp' => 'nomor_hp_ppl', 'label' => 'PPL'],
+    'pml' => ['table' => 'tbl_pml_revisit' . $suffix_fase, 'nama' => 'nama_pml', 'hp' => 'nomor_hp_pml', 'label' => 'PML'],
     'koseka' => ['table' => 'tbl_koseka_revisit', 'nama' => 'nama_koseka', 'hp' => 'nomor_hp_koseka', 'label' => 'KOSEKA'],
 ];
 
@@ -34,7 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama = trim(preg_replace('/\s+/', ' ', (string) ($_POST['nama'] ?? '')));
     $hp_input = trim((string) ($_POST['nomor_hp'] ?? ''));
     $redirect = 'petugas_revisit.php?' . http_build_query(array_filter([
-        'tab' => $jenis, 'dummy' => $_POST['f_dummy'] ?? '', 'q' => $_POST['f_q'] ?? '',
+        'fase' => $_POST['f_fase'] ?? $fase,
+        'tab' => $jenis,
+        'dummy' => $_POST['f_dummy'] ?? '',
+        'q' => $_POST['f_q'] ?? '',
     ]));
 
     if (!hash_equals($_SESSION['csrf_token'] ?? '', (string) ($_POST['csrf_token'] ?? '')) || !isset($tabel[$jenis]) || $id <= 0) {
@@ -82,9 +93,9 @@ if ($tab === 'ppl') {
                    COUNT(DISTINCT a.wilayah_id) AS jml_wilayah, COALESCE(SUM(a.jumlah_subsls), 0) AS jml_subsls,
                    GROUP_CONCAT(DISTINCT w.kecamatan ORDER BY w.kecamatan SEPARATOR ', ') AS kecamatan,
                    GROUP_CONCAT(DISTINCT CONCAT(w.kelurahan, ' ', REPLACE(w.lingkungan, 'LINGKUNGAN ', 'L.')) ORDER BY w.kelurahan, w.lingkungan SEPARATOR ', ') AS wilayah
-            FROM tbl_ppl_revisit p
-            LEFT JOIN tbl_pml_revisit pm ON pm.id = p.pml_id
-            LEFT JOIN tbl_alokasi_wilayah_revisit a ON a.ppl_id = p.id
+            FROM {$tabel['ppl']['table']} p
+            LEFT JOIN {$tabel['pml']['table']} pm ON pm.id = p.pml_id
+            LEFT JOIN {$alokasi_table} a ON a.ppl_id = p.id
             LEFT JOIN tbl_wilayah w ON w.id = a.wilayah_id
             GROUP BY p.id ORDER BY p.is_dummy DESC, p.nama_ppl ASC";
     $rows = $pdo->query($sql)->fetchAll();
@@ -93,9 +104,9 @@ if ($tab === 'ppl') {
                    GROUP_CONCAT(DISTINCT p.nama_ppl ORDER BY p.nama_ppl SEPARATOR ', ') AS bawahan,
                    COUNT(DISTINCT a.wilayah_id) AS jml_wilayah,
                    GROUP_CONCAT(DISTINCT w.kecamatan ORDER BY w.kecamatan SEPARATOR ', ') AS kecamatan
-            FROM tbl_pml_revisit pm
-            LEFT JOIN tbl_ppl_revisit p ON p.pml_id = pm.id
-            LEFT JOIN tbl_alokasi_wilayah_revisit a ON a.ppl_id = p.id
+            FROM {$tabel['pml']['table']} pm
+            LEFT JOIN {$tabel['ppl']['table']} p ON p.pml_id = pm.id
+            LEFT JOIN {$alokasi_table} a ON a.ppl_id = p.id
             LEFT JOIN tbl_wilayah w ON w.id = a.wilayah_id
             GROUP BY pm.id ORDER BY pm.is_dummy DESC, pm.nama_pml ASC";
     $rows = $pdo->query($sql)->fetchAll();
@@ -107,7 +118,7 @@ if ($tab === 'ppl') {
             GROUP BY k.id ORDER BY k.id ASC";
     $rows = $pdo->query($sql)->fetchAll();
 } else {
-    $data_rev = petugas_muat_periode($pdo, 'REVISIT');
+    $data_rev = petugas_muat_periode($pdo, $fase);
     $wil = $pdo->query("SELECT id, kecamatan, kelurahan, lingkungan FROM tbl_wilayah
                         ORDER BY kecamatan, kelurahan, CAST(SUBSTRING_INDEX(lingkungan, ' ', -1) AS UNSIGNED), lingkungan")->fetchAll();
     foreach ($wil as $w) {
@@ -140,7 +151,7 @@ if ($cari !== '') {
 
 $kecamatan_list = $pdo->query("SELECT DISTINCT kecamatan FROM tbl_wilayah ORDER BY kecamatan")->fetchAll(PDO::FETCH_COLUMN);
 
-$page_title = "Petugas Revisit SE2026";
+$page_title = "Petugas {$fase_label} SE2026";
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/navbar.php';
 admin_ui_styles();
@@ -150,13 +161,18 @@ admin_ui_styles();
 
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
         <div>
-            <h4 class="fw-bold mb-1 text-revisit"><i class="bi bi-arrow-repeat me-1"></i> Petugas Revisit Sensus Ekonomi 2026</h4>
+            <h4 class="fw-bold mb-1 text-revisit"><i class="bi bi-arrow-repeat me-1"></i> Petugas <?= h($fase_label); ?> Sensus Ekonomi 2026</h4>
             <div class="text-muted small">
                 Notifikasi WA laporan warga dikirim ke petugas di halaman ini. Petugas bertanda
                 <span class="tag-dummy">DUMMY</span> masih memakai nomor cadangan <strong><?= h(NOMOR_WA_DUMMY); ?></strong>.
             </div>
         </div>
-        <a href="dashboard.php?periode=REVISIT" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali ke Dashboard</a>
+        <a href="dashboard.php?periode=<?= h($fase); ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Kembali ke Dashboard</a>
+    </div>
+
+    <div class="btn-group btn-group-sm mb-3" role="group" aria-label="Fase revisit">
+        <a href="?fase=REVISIT_1&tab=<?= h($tab); ?>" class="btn <?= $fase === 'REVISIT_1' ? 'btn-success' : 'btn-outline-success'; ?>">Revisit 1</a>
+        <a href="?fase=REVISIT_2&tab=<?= h($tab); ?>" class="btn <?= $fase === 'REVISIT_2' ? 'btn-primary' : 'btn-outline-primary'; ?>">Revisit 2</a>
     </div>
 
     <?php if (!empty($_SESSION['petugas_msg'])): ?>
@@ -168,14 +184,14 @@ admin_ui_styles();
     <?php endif; ?>
 
     <div class="row g-3 mb-3">
-        <?php foreach (['pml' => 'PML Revisit', 'ppl' => 'PPL Revisit', 'koseka' => 'Koseka Revisit'] as $k => $lbl): ?>
+        <?php foreach (['pml' => 'PML ' . $fase_label, 'ppl' => 'PPL ' . $fase_label, 'koseka' => 'Koseka Revisit'] as $k => $lbl): ?>
             <div class="col-md-4">
                 <div class="card card-custom p-3 h-100">
                     <div class="text-muted small fw-semibold"><?= $lbl; ?></div>
                     <div class="fs-4 fw-bold"><?= (int) $ring[$k]['total']; ?> <span class="fs-6 text-muted">orang</span></div>
                     <div class="small <?= $ring[$k]['dummy'] > 0 ? 'text-danger' : 'text-success'; ?>">
                         <?= $ring[$k]['dummy'] > 0
-                            ? (int) $ring[$k]['dummy'] . ' masih nomor dummy — ' . '<a class="text-danger" href="?tab=' . $k . '&dummy=1">lengkapi</a>'
+                            ? (int) $ring[$k]['dummy'] . ' masih nomor dummy — ' . '<a class="text-danger" href="?fase=' . h($fase) . '&tab=' . $k . '&dummy=1">lengkapi</a>'
                             : 'Semua sudah memakai nomor asli'; ?>
                     </div>
                 </div>
@@ -186,7 +202,7 @@ admin_ui_styles();
     <ul class="nav nav-tabs mb-0">
         <?php foreach (['pml' => 'PML', 'ppl' => 'PPL', 'koseka' => 'Koseka', 'wilayah' => 'Alokasi Wilayah'] as $k => $lbl): ?>
             <li class="nav-item">
-                <a class="nav-link <?= $tab === $k ? 'active fw-semibold' : ''; ?>" href="?tab=<?= $k; ?>"><?= $lbl; ?></a>
+                <a class="nav-link <?= $tab === $k ? 'active fw-semibold' : ''; ?>" href="?fase=<?= h($fase); ?>&tab=<?= $k; ?>"><?= $lbl; ?></a>
             </li>
         <?php endforeach; ?>
     </ul>
@@ -195,6 +211,7 @@ admin_ui_styles();
         <div class="card-body border-bottom">
             <form method="GET" class="row g-2 align-items-center">
                 <input type="hidden" name="tab" value="<?= h($tab); ?>">
+                <input type="hidden" name="fase" value="<?= h($fase); ?>">
                 <div class="col-md-4">
                     <input type="text" name="q" class="form-control" placeholder="Cari nama, nomor, wilayah..." value="<?= h($cari); ?>">
                 </div>
@@ -214,7 +231,7 @@ admin_ui_styles();
                 </div>
                 <div class="col-auto">
                     <button class="btn btn-primary btn-sm">Tampilkan</button>
-                    <a href="?tab=<?= h($tab); ?>" class="btn btn-outline-secondary btn-sm">Reset</a>
+                    <a href="?fase=<?= h($fase); ?>&tab=<?= h($tab); ?>" class="btn btn-outline-secondary btn-sm">Reset</a>
                 </div>
                 <div class="col text-end small text-muted"><?= count($rows); ?> baris</div>
             </form>
@@ -228,8 +245,8 @@ admin_ui_styles();
                             <th>Kecamatan</th>
                             <th>Kelurahan</th>
                             <th>Lingkungan</th>
-                            <th style="min-width: 260px;">PPL Revisit</th>
-                            <th style="min-width: 260px;">PML Revisit</th>
+                            <th style="min-width: 260px;">PPL <?= h($fase_label); ?></th>
+                            <th style="min-width: 260px;">PML <?= h($fase_label); ?></th>
                             <th style="min-width: 200px;">Koseka Revisit</th>
                         </tr>
                     </thead>
@@ -242,7 +259,7 @@ admin_ui_styles();
                                 <?php foreach (['PPL', 'PML', 'KOSEKA'] as $role): ?>
                                     <td>
                                         <div class="d-flex flex-column gap-1">
-                                            <?php foreach ($r[$role] as $p): ?><?= badge_petugas($p, 'REVISIT'); ?><?php endforeach; ?>
+                                            <?php foreach ($r[$role] as $p): ?><?= badge_petugas($p, $fase); ?><?php endforeach; ?>
                                             <?php if (empty($r[$role])): ?><span class="text-danger fst-italic">belum ada</span><?php endif; ?>
                                         </div>
                                     </td>
@@ -259,8 +276,10 @@ admin_ui_styles();
                             <th style="min-width: 260px;">Nama <?= $tabel[$tab]['label']; ?></th>
                             <th style="min-width: 190px;">Nomor HP / WA</th>
                             <th style="width: 90px;"></th>
-                            <?php if ($tab === 'ppl'): ?><th>PML</th><th>Wilayah Tugas</th><?php endif; ?>
-                            <?php if ($tab === 'pml'): ?><th>PPL yang Diawasi</th><th>Kecamatan</th><?php endif; ?>
+                            <?php if ($tab === 'ppl'): ?><th>PML</th>
+                                <th>Wilayah Tugas</th><?php endif; ?>
+                            <?php if ($tab === 'pml'): ?><th>PPL yang Diawasi</th>
+                                <th>Kecamatan</th><?php endif; ?>
                             <?php if ($tab === 'koseka'): ?><th>Kecamatan</th><?php endif; ?>
                             <th>Keterangan</th>
                         </tr>
@@ -290,6 +309,7 @@ admin_ui_styles();
                                     <form id="<?= $form_id; ?>" method="POST">
                                         <input type="hidden" name="csrf_token" value="<?= h($csrf); ?>">
                                         <input type="hidden" name="jenis" value="<?= h($tab); ?>">
+                                        <input type="hidden" name="f_fase" value="<?= h($fase); ?>">
                                         <input type="hidden" name="id" value="<?= (int) $r['id']; ?>">
                                         <input type="hidden" name="f_dummy" value="<?= $hanya_dummy ? '1' : ''; ?>">
                                         <input type="hidden" name="f_q" value="<?= h($cari); ?>">
@@ -314,7 +334,9 @@ admin_ui_styles();
                             </tr>
                         <?php endforeach; ?>
                         <?php if (empty($rows)): ?>
-                            <tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data.</td></tr>
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">Tidak ada data.</td>
+                            </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>

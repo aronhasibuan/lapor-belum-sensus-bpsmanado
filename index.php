@@ -104,9 +104,9 @@ require_once __DIR__ . '/includes/header.php';
                                 required
                                 value="<?= date('Y-m-d'); ?>"
                                 min="<?= date('Y-m-d'); ?>"
-                                max="2026-09-30">
+                                max="2026-10-15">
                             <small class="text-danger d-block mt-1" style="font-size: 0.75rem;">
-                                <i class="bi bi-info-circle me-1"></i><em>*Catatan: Pelaporan belum didata Sensus Ekonomi hanya dapat dijadwalkan hingga tanggal 30 September 2026.</em>
+                                <i class="bi bi-info-circle me-1"></i><em>*Catatan: Pelaporan belum didata Sensus Ekonomi hanya dapat dijadwalkan hingga tanggal 15 Oktober 2026.</em>
                             </small>
                         </div>
                         <div class="col-md-6">

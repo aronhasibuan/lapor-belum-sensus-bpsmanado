@@ -1,8 +1,8 @@
 <?php
 // admin/kirim_notifikasi.php
-// Mengalihkan laporan ke petugas REVISIT dan/atau mengirim ulang notifikasi WhatsApp.
-//   aksi=alihkan : ubah periode laporan SENSUS -> REVISIT, lalu kirim WA ke petugas revisit
-//   aksi=ulang   : kirim ulang WA ke petugas sesuai periode laporan saat ini
+// Mengalihkan laporan Pendataan ke Revisit 2 atau mengirim ulang notifikasi WhatsApp.
+//   aksi=alihkan : ubah periode laporan Pendataan -> Revisit 2, lalu kirim WA
+//   aksi=ulang   : kirim ulang WA sesuai fase laporan saat ini
 
 session_start();
 require_once __DIR__ . '/../config/database.php';
@@ -35,11 +35,11 @@ if (!$laporan) {
 }
 
 if ($aksi === 'alihkan') {
-    $pdo->prepare("UPDATE tbl_laporan SET periode = 'REVISIT' WHERE id = ?")->execute([$id]);
-    $laporan['periode'] = 'REVISIT';
+    $pdo->prepare("UPDATE tbl_laporan SET periode = 'REVISIT_2' WHERE id = ?")->execute([$id]);
+    $laporan['periode'] = 'REVISIT_2';
 }
 
-$periode = periode_valid($laporan['periode']) ?: 'REVISIT';
+$periode = periode_valid($laporan['periode']) ?: 'REVISIT_2';
 
 try {
     $hasil = fonnte_notify_report_submission($pdo, $laporan, $periode);

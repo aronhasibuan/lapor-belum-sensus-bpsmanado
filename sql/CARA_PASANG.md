@@ -13,18 +13,21 @@
    Kode baru membaca kolom `tbl_laporan.periode`, jadi SQL harus dijalankan lebih dulu.
 
 ## Setelah terpasang
-- Laporan warga yang baru masuk otomatis bertanda **REVISIT**, dan WA dikirim ke PPL, PML, serta
-  KOSEKA revisit di wilayah tersebut.
-- Semua laporan lama bertanda **SENSUS** dan tetap menampilkan petugas pendataan lama.
+- Laporan baru otomatis bertanda **Revisit 2** dan notifikasi WA memakai roster/alokasi khusus
+  `tbl_*_revisit_2` dari sheet `Alokasi Revisit 2`; KOSEKA revisit tetap mengikuti kecamatan.
+- Laporan lama bertanda **SENSUS** dipetakan menjadi **Pendataan**; laporan lama bertanda
+  **REVISIT** dipetakan menjadi **Revisit 1**.
 - Menu **Petugas Revisit** dipakai untuk mengisi nomor HP petugas yang masih dummy (08887654811).
-- Tombol **Alihkan ke Revisit** pada laporan SENSUS dipakai untuk memindahkan laporan ke petugas
-  revisit sekaligus mengirim WA.
-- Untuk kembali memakai petugas pendataan lama, ubah `PERIODE_AKTIF` di `config/periode.php` menjadi `'SENSUS'`.
+- Tombol alihkan pada laporan **Pendataan** memindahkannya ke **Revisit 2** sekaligus mengirim WA.
+- Untuk kembali memakai petugas pendataan lama, ubah `PERIODE_AKTIF` di `config/periode.php` menjadi `'PENDATAAN'`.
 
 ## Catatan
 - Skrip SQL kompatibel dengan **MySQL 5.7/8.x** dan **MariaDB** (sudah diuji di MySQL 8.0 dan MariaDB).
 - Bila impor sebelumnya gagal di tengah jalan, cukup impor ulang skrip ini. Tidak perlu menghapus apa pun.
-- Menjalankan ulang skrip SQL akan mengisi ulang tabel `*_revisit` dari Excel. Nomor HP yang sudah
-  diedit lewat admin akan hilang.
+- Menjalankan ulang skrip SQL hanya mengisi ulang tabel `*_revisit_2` dari sheet **Alokasi Revisit 2**.
+  Data dan nomor petugas **Revisit 1** tidak dihapus atau ditimpa. Nomor Revisit 2 yang sudah diedit
+  lewat admin akan kembali ke nomor sumber atau nomor dummy.
+- Satu PML tidak memiliki nomor terverifikasi di sumber/database lama dan memakai nomor dummy;
+  lengkapi melalui menu **Petugas Revisit** sebelum mengandalkan notifikasi WhatsApp untuk PML itu.
 - `daftar_petugas_revisit_hasil_olah.csv` berisi daftar PPL dan PML revisit beserta nomor yang dipakai,
   untuk dicek manual.

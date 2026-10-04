@@ -2,6 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/includes/petugas_lib.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $laporan_id = (int)($_POST['laporan_id'] ?? 0);
@@ -94,14 +95,15 @@ $laporanList = $laporanStmt->fetchAll();
                     <form action="petugas.php" method="POST">
                         <div class="mb-3">
                             <label for="laporan_id" class="form-label fw-semibold">Pilih Masyarakat / Laporan <span class="text-danger">*</span></label>
-                            <select class="form-select" id="laporan_id" name="laporan_id" required>
+                            <select class="form-select" id="laporan_id" name="laporan_id" placeholder="Ketik nama, nomor laporan, kecamatan, atau kelurahan..." autocomplete="off" required>
                                 <option value="">-- Pilih laporan belum ditindaklanjuti --</option>
                                 <?php foreach ($laporanList as $laporan): ?>
                                     <option value="<?= (int)$laporan['id']; ?>">
-                                        <?= htmlspecialchars('#' . $laporan['id'] . (($laporan['periode'] ?? '') === 'REVISIT' ? ' [Revisit]' : ' [Sensus]') . ' - ' . $laporan['nama_pelapor'] . ' | ' . $laporan['kecamatan'] . ' / ' . $laporan['kelurahan'] . ' / ' . $laporan['nomor_lingkungan']); ?>
+                                        <?= htmlspecialchars('#' . $laporan['id'] . ' [' . periode_label($laporan['periode'] ?? 'PENDATAAN') . '] - ' . $laporan['nama_pelapor'] . ' | ' . $laporan['kecamatan'] . ' / ' . $laporan['kelurahan'] . ' / ' . $laporan['nomor_lingkungan']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <div class="form-text"><i class="bi bi-search me-1"></i>Bisa diketik untuk mencari, atau klik untuk memilih dari daftar.</div>
                         </div>
 
                         <div class="mb-3">
@@ -131,5 +133,38 @@ $laporanList = $laporanStmt->fetchAll();
         </div>
     </div>
 </div>
+
+<!-- Tom Select: dropdown yang bisa diketik untuk mencari -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var el = document.getElementById('laporan_id');
+        if (!el || typeof TomSelect === 'undefined') return; // fallback: tetap dropdown biasa
+
+        new TomSelect(el, {
+            create: false,
+            allowEmptyOption: false,
+            maxOptions: null, // tampilkan semua hasil, tidak dibatasi 50
+            searchField: ['text'],
+            sortField: [{
+                field: '$score'
+            }, {
+                field: '$order'
+            }],
+            placeholder: el.getAttribute('placeholder'),
+            render: {
+                no_results: function() {
+                    return '<div class="no-results px-3 py-2 text-muted small">Tidak ada laporan yang cocok.</div>';
+                }
+            }
+        });
+    });
+</script>
+<style>
+    .ts-dropdown .option {
+        white-space: normal;
+    }
+</style>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

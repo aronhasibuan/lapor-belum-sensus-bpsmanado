@@ -1,9 +1,7 @@
 <?php
 // admin/dashboard.php
 // Dashboard monitoring laporan warga belum didata.
-// Setiap laporan ditandai periodenya (SENSUS / REVISIT) dan menampilkan
-// petugas sesuai periode tersebut, sehingga petugas pendataan Sensus Ekonomi
-// dan petugas Revisit dapat dibedakan.
+// Setiap laporan ditandai fase kegiatan dan menampilkan petugas sesuai fasenya.
 
 session_start();
 require_once __DIR__ . '/../config/database.php';
@@ -31,9 +29,13 @@ $query_string = function (array $override = []) use ($filter_periode, $filter_st
 };
 
 // 1. Ringkasan statistik per periode & status
-$stat = ['SENSUS' => ['total' => 0, 'belum' => 0, 'sudah' => 0], 'REVISIT' => ['total' => 0, 'belum' => 0, 'sudah' => 0]];
+$stat = [
+    'PENDATAAN' => ['total' => 0, 'belum' => 0, 'sudah' => 0],
+    'REVISIT_1' => ['total' => 0, 'belum' => 0, 'sudah' => 0],
+    'REVISIT_2' => ['total' => 0, 'belum' => 0, 'sudah' => 0],
+];
 foreach ($pdo->query("SELECT periode, status, COUNT(*) AS n FROM tbl_laporan GROUP BY periode, status") as $r) {
-    $p = periode_valid($r['periode']) ?: 'SENSUS';
+    $p = periode_valid($r['periode']) ?: 'PENDATAAN';
     $stat[$p]['total'] += (int) $r['n'];
     if ($r['status'] === 'Sudah Ditindaklanjuti') {
         $stat[$p]['sudah'] += (int) $r['n'];
@@ -44,16 +46,16 @@ foreach ($pdo->query("SELECT periode, status, COUNT(*) AS n FROM tbl_laporan GRO
 $stat_view = $filter_periode !== ''
     ? $stat[$filter_periode]
     : [
-        'total' => $stat['SENSUS']['total'] + $stat['REVISIT']['total'],
-        'belum' => $stat['SENSUS']['belum'] + $stat['REVISIT']['belum'],
-        'sudah' => $stat['SENSUS']['sudah'] + $stat['REVISIT']['sudah'],
+        'total' => array_sum(array_column($stat, 'total')),
+        'belum' => array_sum(array_column($stat, 'belum')),
+        'sudah' => array_sum(array_column($stat, 'sudah')),
     ];
 
 $rev = $pdo->query("SELECT
-        (SELECT COUNT(*) FROM tbl_ppl_revisit) AS ppl,
-        (SELECT COUNT(*) FROM tbl_ppl_revisit WHERE is_dummy = 1) AS ppl_dummy,
-        (SELECT COUNT(*) FROM tbl_pml_revisit) AS pml,
-        (SELECT COUNT(*) FROM tbl_pml_revisit WHERE is_dummy = 1) AS pml_dummy")->fetch();
+    (SELECT COUNT(*) FROM tbl_ppl_revisit_2) AS ppl,
+    (SELECT COUNT(*) FROM tbl_ppl_revisit WHERE is_dummy = 1) + (SELECT COUNT(*) FROM tbl_ppl_revisit_2 WHERE is_dummy = 1) AS ppl_dummy,
+    (SELECT COUNT(*) FROM tbl_pml_revisit_2) AS pml,
+    (SELECT COUNT(*) FROM tbl_pml_revisit WHERE is_dummy = 1) + (SELECT COUNT(*) FROM tbl_pml_revisit_2 WHERE is_dummy = 1) AS pml_dummy")->fetch();
 
 // 2. List kecamatan untuk filter
 $list_kecamatan = $pdo->query("SELECT DISTINCT kecamatan FROM tbl_wilayah ORDER BY kecamatan ASC")->fetchAll(PDO::FETCH_COLUMN);
@@ -128,6 +130,7 @@ $map_data = array_map(function ($row) {
         'lng'       => (float) $row['longitude'],
         'status'    => $row['status'],
         'periode'   => $row['periode'],
+        'periode_label' => periode_label($row['periode']),
         'ppl'       => $fmt($row['petugas']['PPL']),
         'pml'       => $fmt($row['petugas']['PML']),
     ];
@@ -155,23 +158,28 @@ admin_ui_styles();
         <ul class="nav nav-pills nav-periode gap-1">
             <li class="nav-item">
                 <a class="nav-link periode-semua <?= $filter_periode === '' ? 'active' : ''; ?>" href="dashboard.php<?= $query_string(['periode' => '']); ?>">
-                    Semua Laporan <span class="badge bg-light text-dark ms-1"><?= $stat['SENSUS']['total'] + $stat['REVISIT']['total']; ?></span>
+                    Semua Laporan <span class="badge bg-light text-dark ms-1"><?= array_sum(array_column($stat, 'total')); ?></span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link periode-sensus <?= $filter_periode === 'SENSUS' ? 'active' : ''; ?>" href="dashboard.php<?= $query_string(['periode' => 'SENSUS']); ?>">
-                    <i class="bi bi-clipboard-data me-1"></i>Petugas Sensus Ekonomi <span class="badge bg-light text-dark ms-1"><?= $stat['SENSUS']['total']; ?></span>
+                <a class="nav-link periode-sensus <?= $filter_periode === 'PENDATAAN' ? 'active' : ''; ?>" href="dashboard.php<?= $query_string(['periode' => 'PENDATAAN']); ?>">
+                    <i class="bi bi-clipboard-data me-1"></i>Pendataan <span class="badge bg-light text-dark ms-1"><?= $stat['PENDATAAN']['total']; ?></span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link periode-revisit <?= $filter_periode === 'REVISIT' ? 'active' : ''; ?>" href="dashboard.php<?= $query_string(['periode' => 'REVISIT']); ?>">
-                    <i class="bi bi-arrow-repeat me-1"></i>Petugas Revisit <span class="badge bg-light text-dark ms-1"><?= $stat['REVISIT']['total']; ?></span>
+                <a class="nav-link periode-revisit <?= $filter_periode === 'REVISIT_1' ? 'active' : ''; ?>" href="dashboard.php<?= $query_string(['periode' => 'REVISIT_1']); ?>">
+                    <i class="bi bi-arrow-repeat me-1"></i>Revisit 1 <span class="badge bg-light text-dark ms-1"><?= $stat['REVISIT_1']['total']; ?></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link periode-revisit <?= $filter_periode === 'REVISIT_2' ? 'active' : ''; ?>" href="dashboard.php<?= $query_string(['periode' => 'REVISIT_2']); ?>">
+                    <i class="bi bi-arrow-repeat me-1"></i>Revisit 2 <span class="badge bg-light text-dark ms-1"><?= $stat['REVISIT_2']['total']; ?></span>
                 </a>
             </li>
         </ul>
         <div class="small text-muted">
             Laporan baru dari warga otomatis diteruskan ke petugas
-            <strong class="<?= PERIODE_AKTIF === 'REVISIT' ? 'text-revisit' : ''; ?>"><?= h(periode_label(PERIODE_AKTIF)); ?></strong>.
+            <strong class="<?= periode_is_revisit(PERIODE_AKTIF) ? 'text-revisit' : ''; ?>"><?= h(periode_label(PERIODE_AKTIF)); ?></strong>.
         </div>
     </div>
 
@@ -183,7 +191,7 @@ admin_ui_styles();
                     <div>
                         <div class="text-muted small fw-semibold">TOTAL LAPORAN<?= $filter_periode ? ' ' . strtoupper($filter_periode) : ''; ?></div>
                         <div class="fs-3 fw-bold text-dark"><?= number_format($stat_view['total']); ?></div>
-                        <div class="small text-muted">Sensus <?= $stat['SENSUS']['total']; ?> · <span class="text-revisit">Revisit <?= $stat['REVISIT']['total']; ?></span></div>
+                        <div class="small text-muted">Pendataan <?= $stat['PENDATAAN']['total']; ?> · Revisit 1 <?= $stat['REVISIT_1']['total']; ?> · <span class="text-revisit">Revisit 2 <?= $stat['REVISIT_2']['total']; ?></span></div>
                     </div>
                     <div class="bg-primary-subtle text-primary p-3 rounded-circle"><i class="bi bi-folder-fill fs-4"></i></div>
                 </div>
@@ -195,7 +203,7 @@ admin_ui_styles();
                     <div>
                         <div class="text-muted small fw-semibold">BELUM DITINDAKLANJUTI</div>
                         <div class="fs-3 fw-bold text-warning-emphasis"><?= number_format($stat_view['belum']); ?></div>
-                        <div class="small text-muted">Sensus <?= $stat['SENSUS']['belum']; ?> · <span class="text-revisit">Revisit <?= $stat['REVISIT']['belum']; ?></span></div>
+                        <div class="small text-muted">Pendataan <?= $stat['PENDATAAN']['belum']; ?> · Revisit 1 <?= $stat['REVISIT_1']['belum']; ?> · <span class="text-revisit">Revisit 2 <?= $stat['REVISIT_2']['belum']; ?></span></div>
                     </div>
                     <div class="bg-warning-subtle text-warning-emphasis p-3 rounded-circle"><i class="bi bi-hourglass-split fs-4"></i></div>
                 </div>
@@ -207,7 +215,7 @@ admin_ui_styles();
                     <div>
                         <div class="text-muted small fw-semibold">SUDAH DITINDAKLANJUTI</div>
                         <div class="fs-3 fw-bold text-success"><?= number_format($stat_view['sudah']); ?></div>
-                        <div class="small text-muted">Sensus <?= $stat['SENSUS']['sudah']; ?> · <span class="text-revisit">Revisit <?= $stat['REVISIT']['sudah']; ?></span></div>
+                        <div class="small text-muted">Pendataan <?= $stat['PENDATAAN']['sudah']; ?> · Revisit 1 <?= $stat['REVISIT_1']['sudah']; ?> · <span class="text-revisit">Revisit 2 <?= $stat['REVISIT_2']['sudah']; ?></span></div>
                     </div>
                     <div class="bg-success-subtle text-success p-3 rounded-circle"><i class="bi bi-check2-circle fs-4"></i></div>
                 </div>
@@ -218,7 +226,7 @@ admin_ui_styles();
                 <div class="card card-custom p-3 border-start border-4 border-revisit h-100">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <div class="text-muted small fw-semibold">PETUGAS REVISIT</div>
+                            <div class="text-muted small fw-semibold">PETUGAS REVISIT-2</div>
                             <div class="fs-3 fw-bold text-revisit"><?= (int) $rev['ppl']; ?> <span class="fs-6 text-muted">PPL</span> · <?= (int) $rev['pml']; ?> <span class="fs-6 text-muted">PML</span></div>
                             <div class="small <?= ($rev['ppl_dummy'] + $rev['pml_dummy']) > 0 ? 'text-danger' : 'text-muted'; ?>">
                                 <?= (int) $rev['ppl_dummy'] + (int) $rev['pml_dummy']; ?> petugas masih nomor dummy &rsaquo;
@@ -361,7 +369,7 @@ admin_ui_styles();
     };
     $chip_petugas = function (array $p, $periode) {
         $role = strtoupper($p['role'] ?? '');
-        $cls = 'chip-petugas badge-' . strtolower($role) . '-' . (strtoupper($periode) === 'REVISIT' ? 'revisit' : 'sensus') . (!empty($p['dummy']) ? ' badge-dummy' : '');
+        $cls = 'chip-petugas badge-' . strtolower($role) . '-' . (periode_is_revisit($periode) ? 'revisit' : 'sensus') . (!empty($p['dummy']) ? ' badge-dummy' : '');
         $wa = wa_link_number($p['phone'] ?? '');
         $tip = $role . ' ' . ($p['name'] ?? '') . ($wa ? ' · ' . $p['phone'] : '') . (!empty($p['dummy']) ? ' (nomor dummy)' : '');
         $inner = '<b>' . h($role === 'KOSEKA' ? 'KSK' : $role) . '</b>' . h($p['name'] ?? '-');
@@ -418,7 +426,8 @@ admin_ui_styles();
                     <?php else: ?>
                         <?php foreach ($laporan_list as $index => $row): ?>
                             <?php
-                            $periode = periode_valid($row['periode']) ?: 'SENSUS';
+                            $periode = periode_valid($row['periode']) ?: 'PENDATAAN';
+                            $is_revisit = periode_is_revisit($periode);
                             $is_selesai = ($row['status'] === 'Sudah Ditindaklanjuti' || $row['status'] === 'Sudah Selesai / Didata');
                             $wa = wa_link_number($row['no_telepon'] ?? '');
                             $pt = $row['petugas'];
@@ -432,11 +441,7 @@ admin_ui_styles();
                                 <td class="text-center">
                                     <div class="fw-semibold"><?= $index + 1; ?></div>
                                     <div class="lap-sub">#<?= $id; ?></div>
-                                    <?php if ($periode === 'REVISIT'): ?>
-                                        <span class="badge badge-periode-revisit mt-1" style="font-size: .6rem;">REVISIT</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-periode-sensus mt-1" style="font-size: .6rem;">SENSUS</span>
-                                    <?php endif; ?>
+                                    <span class="badge <?= $is_revisit ? 'badge-periode-revisit' : 'badge-periode-sensus'; ?> mt-1" style="font-size: .6rem;"><?= h(periode_label($periode)); ?></span>
                                 </td>
 
                                 <td>
@@ -489,13 +494,13 @@ admin_ui_styles();
                                         <a href="hapus.php?id=<?= $id; ?>" class="btn btn-outline-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data laporan ini?')" title="Hapus Laporan"><i class="bi bi-trash"></i></a>
                                     </div>
                                     <form method="POST" action="kirim_notifikasi.php"
-                                        onsubmit="return confirm(<?= h(json_encode($periode === 'SENSUS'
-                                                                        ? 'Alihkan laporan #' . $id . ' ke petugas REVISIT dan kirim WhatsApp ke PPL, PML, dan Koseka revisit wilayah ini?'
+                                        onsubmit="return confirm(<?= h(json_encode(!$is_revisit
+                                                                        ? 'Alihkan laporan #' . $id . ' ke fase Revisit 2 dan kirim WhatsApp ke petugas wilayah ini?'
                                                                         : 'Kirim ulang WhatsApp laporan #' . $id . ' ke petugas revisit wilayah ini?')); ?>)">
                                         <input type="hidden" name="csrf_token" value="<?= h($csrf); ?>">
                                         <input type="hidden" name="id" value="<?= $id; ?>">
                                         <input type="hidden" name="kembali" value="<?= h($query_string()); ?>">
-                                        <?php if ($periode === 'SENSUS'): ?>
+                                        <?php if (!$is_revisit): ?>
                                             <input type="hidden" name="aksi" value="alihkan">
                                             <button type="submit" class="btn btn-sm w-100 badge-ppl-revisit border-0" style="font-size: .72rem;" title="Alihkan ke petugas revisit & kirim WA">
                                                 <i class="bi bi-arrow-repeat"></i> Ke Revisit
@@ -553,10 +558,10 @@ admin_ui_styles();
             const bounds = [];
             reports.forEach(item => {
                 const isDone = item.status === 'Sudah Ditindaklanjuti';
-                const isRevisit = item.periode === 'REVISIT';
+                const isRevisit = item.periode !== 'PENDATAAN';
                 const popup = `
                 <div class="p-1" style="min-width: 220px;">
-                    <span class="badge ${isRevisit ? 'badge-periode-revisit' : 'badge-periode-sensus'} mb-1">${isRevisit ? 'Revisit' : 'Sensus'} · #${item.id}</span>
+                    <span class="badge ${isRevisit ? 'badge-periode-revisit' : 'badge-periode-sensus'} mb-1">${esc(item.periode_label)} · #${item.id}</span>
                     <h6 class="fw-bold mb-1">${esc(item.nama)}</h6>
                     <small class="text-muted d-block mb-1">${esc(item.kecamatan)}, ${esc(item.kelurahan)} (${esc(item.lingk)})</small>
                     <div class="badge bg-light text-dark border mb-1 d-block text-start">📞 HP: ${esc(item.telepon)}</div>

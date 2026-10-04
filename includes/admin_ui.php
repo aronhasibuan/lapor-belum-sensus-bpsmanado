@@ -32,10 +32,10 @@ function csrf_token()
 /** Badge periode laporan. */
 function badge_periode($periode)
 {
-    if (strtoupper((string) $periode) === 'REVISIT') {
-        return '<span class="badge badge-periode-revisit"><i class="bi bi-arrow-repeat me-1"></i>Revisit</span>';
+    if (periode_is_revisit($periode)) {
+        return '<span class="badge badge-periode-revisit"><i class="bi bi-arrow-repeat me-1"></i>' . h(periode_label($periode)) . '</span>';
     }
-    return '<span class="badge badge-periode-sensus"><i class="bi bi-clipboard-data me-1"></i>Sensus</span>';
+    return '<span class="badge badge-periode-sensus"><i class="bi bi-clipboard-data me-1"></i>' . h(periode_label($periode)) . '</span>';
 }
 
 /**
@@ -44,7 +44,7 @@ function badge_periode($periode)
  */
 function badge_petugas(array $p, $periode)
 {
-    $periode = strtoupper((string) $periode) === 'REVISIT' ? 'revisit' : 'sensus';
+    $periode = periode_is_revisit($periode) ? 'revisit' : 'sensus';
     $role = strtoupper($p['role'] ?? '');
     $class = 'badge-petugas badge-' . strtolower($role) . '-' . $periode;
     if (!empty($p['dummy'])) {
@@ -64,32 +64,134 @@ function badge_petugas(array $p, $periode)
 
 function admin_ui_styles()
 {
-    ?>
+?>
     <style>
-        .badge-petugas { display: block; text-align: left; white-space: normal; text-decoration: none; font-weight: 500; line-height: 1.35; }
+        .badge-petugas {
+            display: block;
+            text-align: left;
+            white-space: normal;
+            text-decoration: none;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+
         /* Petugas pendataan Sensus Ekonomi: biru / kuning / biru muda (seperti sebelumnya) */
-        .badge-ppl-sensus { background: #0d6efd; color: #fff; }
-        .badge-pml-sensus { background: #ffc107; color: #212529; }
-        .badge-koseka-sensus { background: #cff4fc; color: #055160; border: 1px solid #9eeaf9; }
+        .badge-ppl-sensus {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .badge-pml-sensus {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .badge-koseka-sensus {
+            background: #cff4fc;
+            color: #055160;
+            border: 1px solid #9eeaf9;
+        }
+
         /* Petugas Revisit: ungu / ungu muda / hijau toska */
-        .badge-ppl-revisit { background: #6f42c1; color: #fff; }
-        .badge-pml-revisit { background: #e2d9f3; color: #432874; border: 1px solid #c5b3e6; }
-        .badge-koseka-revisit { background: #d2f4ea; color: #0f5132; border: 1px solid #a6e9d5; }
-        .badge-petugas:hover { filter: brightness(0.95); }
-        .badge-dummy { outline: 2px dashed #dc3545; outline-offset: -2px; }
-        .tag-dummy { background: #dc3545; color: #fff; border-radius: 4px; padding: 0 4px; font-size: .65rem; font-weight: 700; margin-left: 2px; }
-        .badge-periode-sensus { background: #e9ecef; color: #495057; border: 1px solid #ced4da; }
-        .badge-periode-revisit { background: #6f42c1; color: #fff; }
-        tr.row-periode-revisit > td:first-child { box-shadow: inset 4px 0 0 #6f42c1; }
-        tr.row-periode-sensus > td:first-child { box-shadow: inset 4px 0 0 #adb5bd; }
-        .nav-periode .nav-link { color: #495057; font-weight: 600; }
-        .nav-periode .nav-link.active.periode-semua { background: #0b1f33; color: #fff; }
-        .nav-periode .nav-link.active.periode-sensus { background: #6c757d; color: #fff; }
-        .nav-periode .nav-link.active.periode-revisit { background: #6f42c1; color: #fff; }
-        .legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
-        .text-revisit { color: #6f42c1 !important; }
-        .bg-revisit-subtle { background: #efe8fb !important; }
-        .border-revisit { border-color: #6f42c1 !important; }
+        .badge-ppl-revisit {
+            background: #6f42c1;
+            color: #fff;
+        }
+
+        .badge-pml-revisit {
+            background: #e2d9f3;
+            color: #432874;
+            border: 1px solid #c5b3e6;
+        }
+
+        .badge-koseka-revisit {
+            background: #d2f4ea;
+            color: #0f5132;
+            border: 1px solid #a6e9d5;
+        }
+
+        .badge-petugas:hover {
+            filter: brightness(0.95);
+        }
+
+        .badge-dummy {
+            outline: 2px dashed #dc3545;
+            outline-offset: -2px;
+        }
+
+        .tag-dummy {
+            background: #dc3545;
+            color: #fff;
+            border-radius: 4px;
+            padding: 0 4px;
+            font-size: .65rem;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+
+        .badge-periode-sensus {
+            background: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+
+        .badge-periode-revisit {
+            background: #6f42c1;
+            color: #fff;
+        }
+
+        tr.row-periode-pendataan>td:first-child {
+            box-shadow: inset 4px 0 0 #adb5bd;
+        }
+
+        tr.row-periode-revisit_1>td:first-child {
+            box-shadow: inset 4px 0 0 #198754;
+        }
+
+        tr.row-periode-revisit_2>td:first-child {
+            box-shadow: inset 4px 0 0 #6f42c1;
+        }
+
+        .nav-periode .nav-link {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .nav-periode .nav-link.active.periode-semua {
+            background: #0b1f33;
+            color: #fff;
+        }
+
+        .nav-periode .nav-link.active.periode-sensus {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .nav-periode .nav-link.active.periode-revisit {
+            background: #6f42c1;
+            color: #fff;
+        }
+
+        .legend-swatch {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            vertical-align: -1px;
+            margin-right: 4px;
+        }
+
+        .text-revisit {
+            color: #6f42c1 !important;
+        }
+
+        .bg-revisit-subtle {
+            background: #efe8fb !important;
+        }
+
+        .border-revisit {
+            border-color: #6f42c1 !important;
+        }
     </style>
-    <?php
+<?php
 }

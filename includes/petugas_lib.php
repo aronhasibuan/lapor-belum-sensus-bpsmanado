@@ -1,7 +1,7 @@
 <?php
 // includes/petugas_lib.php
 // Fungsi bersama untuk mencari petugas (PPL, PML, KOSEKA) sebuah wilayah,
-// baik petugas pendataan Sensus Ekonomi (SENSUS) maupun petugas REVISIT.
+// baik petugas Pendataan, Revisit 1, maupun Revisit 2.
 // Dipakai oleh notifikasi WhatsApp, dashboard admin, dan export.
 
 require_once __DIR__ . '/../config/periode.php';
@@ -9,13 +9,24 @@ require_once __DIR__ . '/../config/periode.php';
 /** Label tampilan periode. */
 function periode_label($periode)
 {
-    return strtoupper((string) $periode) === 'REVISIT' ? 'Revisit SE2026' : 'Sensus Ekonomi 2026';
+    $labels = [
+        'PENDATAAN' => 'Pendataan SE2026',
+        'REVISIT_1' => 'Revisit 1 SE2026',
+        'REVISIT_2' => 'Revisit 2 SE2026',
+    ];
+    return $labels[periode_valid($periode)] ?? 'Pendataan SE2026';
 }
 
 function periode_valid($periode)
 {
     $periode = strtoupper(trim((string) $periode));
-    return in_array($periode, ['SENSUS', 'REVISIT'], true) ? $periode : '';
+    $periode = ['SENSUS' => 'PENDATAAN', 'REVISIT' => 'REVISIT_1'][$periode] ?? $periode;
+    return in_array($periode, ['PENDATAAN', 'REVISIT_1', 'REVISIT_2'], true) ? $periode : '';
+}
+
+function periode_is_revisit($periode)
+{
+    return in_array(periode_valid($periode), ['REVISIT_1', 'REVISIT_2'], true);
 }
 
 /** Kunci pencocokan wilayah: KECAMATAN|KELURAHAN|LINGKUNGAN (huruf besar, spasi dirapikan). */
@@ -51,12 +62,47 @@ function nomor_hp_rapikan($raw)
     }
 
     $prefix_seluler = [
-        '0811', '0812', '0813', '0821', '0822', '0823', '0851', '0852', '0853',
-        '0814', '0815', '0816', '0855', '0856', '0857', '0858',
-        '0817', '0818', '0819', '0859', '0877', '0878', '0879',
-        '0831', '0832', '0833', '0838',
-        '0895', '0896', '0897', '0898', '0899',
-        '0881', '0882', '0883', '0884', '0885', '0886', '0887', '0888', '0889',
+        '0811',
+        '0812',
+        '0813',
+        '0821',
+        '0822',
+        '0823',
+        '0851',
+        '0852',
+        '0853',
+        '0814',
+        '0815',
+        '0816',
+        '0855',
+        '0856',
+        '0857',
+        '0858',
+        '0817',
+        '0818',
+        '0819',
+        '0859',
+        '0877',
+        '0878',
+        '0879',
+        '0831',
+        '0832',
+        '0833',
+        '0838',
+        '0895',
+        '0896',
+        '0897',
+        '0898',
+        '0899',
+        '0881',
+        '0882',
+        '0883',
+        '0884',
+        '0885',
+        '0886',
+        '0887',
+        '0888',
+        '0889',
     ];
     if (!in_array(substr($digits, 0, 4), $prefix_seluler, true)) {
         return null;
@@ -111,7 +157,16 @@ function petugas_muat_periode(PDO $pdo, $periode)
 
     $data = ['wilayah' => [], 'koseka' => []];
 
-    if ($periode === 'REVISIT') {
+    if ($periode === 'REVISIT_2') {
+        $sql = "SELECT w.kecamatan, w.kelurahan, w.lingkungan,
+                       p.id AS ppl_id, p.nama_ppl, p.nomor_hp_ppl, p.is_dummy AS ppl_dummy,
+                       pm.id AS pml_id, pm.nama_pml, pm.nomor_hp_pml, pm.is_dummy AS pml_dummy
+                FROM tbl_alokasi_wilayah_revisit_2 aw
+                JOIN tbl_wilayah w ON w.id = aw.wilayah_id
+                JOIN tbl_ppl_revisit_2 p ON p.id = aw.ppl_id
+                LEFT JOIN tbl_pml_revisit_2 pm ON pm.id = p.pml_id
+                ORDER BY p.is_dummy ASC, p.nama_ppl ASC";
+    } elseif ($periode === 'REVISIT_1') {
         $sql = "SELECT w.kecamatan, w.kelurahan, w.lingkungan,
                        p.id AS ppl_id, p.nama_ppl, p.nomor_hp_ppl, p.is_dummy AS ppl_dummy,
                        pm.id AS pml_id, pm.nama_pml, pm.nomor_hp_pml, pm.is_dummy AS pml_dummy
@@ -152,7 +207,7 @@ function petugas_muat_periode(PDO $pdo, $periode)
         }
     }
 
-    if ($periode === 'REVISIT') {
+    if (periode_is_revisit($periode)) {
         $sql = "SELECT kk.kecamatan, k.nama_koseka, k.nomor_hp_koseka, k.is_dummy
                 FROM tbl_koseka_revisit_kecamatan kk
                 JOIN tbl_koseka_revisit k ON k.id = kk.koseka_id
@@ -214,7 +269,7 @@ function petugas_wilayah(PDO $pdo, $periode, $kecamatan, $kelurahan, $lingkungan
 /** Petugas untuk satu baris tbl_laporan, sesuai periode laporan tersebut. */
 function petugas_laporan(PDO $pdo, array $laporan)
 {
-    $periode = periode_valid($laporan['periode'] ?? '') ?: 'SENSUS';
+    $periode = periode_valid($laporan['periode'] ?? '') ?: 'PENDATAAN';
     return petugas_wilayah($pdo, $periode, $laporan['kecamatan'] ?? '', $laporan['kelurahan'] ?? '', $laporan['nomor_lingkungan'] ?? '');
 }
 

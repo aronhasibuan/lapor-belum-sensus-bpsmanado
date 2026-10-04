@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($pdo)) {
             // Jika koneksi menggunakan PDO
-            // Kolom periode menandai laporan ini ditangani petugas SENSUS atau REVISIT.
+            // Kolom periode menandai fase kegiatan laporan ini.
             $sql = "INSERT INTO tbl_laporan (nama_pelapor, no_telepon, kecamatan, kelurahan, nomor_lingkungan, catatan, waktu_pendataan, latitude, longitude, status, periode) 
                     VALUES (:nama_pelapor, :no_telepon, :kecamatan, :kelurahan, :nomor_lingkungan, :catatan, :waktu_pendataan, :latitude, :longitude, 'Belum Ditindaklanjuti', :periode)";
 

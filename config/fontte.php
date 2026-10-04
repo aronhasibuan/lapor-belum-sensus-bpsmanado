@@ -208,7 +208,7 @@ function fonnte_build_report_message(array $contact, array $d)
     $penutup = [
         'PPL' => "*TINDAK LANJUT*\n"
             . "1. Hubungi pelapor lebih dulu untuk memastikan waktu kunjungan.\n"
-            . "2. Lakukan " . ($d['periode'] === 'REVISIT' ? 'kunjungan revisit' : 'pendataan') . " sesuai prosedur SE2026.\n"
+            . "2. Lakukan " . (periode_is_revisit($d['periode']) ? 'kunjungan revisit' : 'pendataan') . " sesuai prosedur SE2026.\n"
             . "3. Laporkan hasilnya ke PML setelah selesai.\n\n"
             . "Mohon ditindaklanjuti maksimal 2x24 jam sejak pesan ini diterima.",
         'PML' => "*TINDAK LANJUT*\n"
@@ -221,9 +221,7 @@ function fonnte_build_report_message(array $contact, array $d)
 
     $lines = [];
     $lines[] = "*LAPORAN WARGA BELUM TERSENSUS*";
-    $lines[] = $d['periode'] === 'REVISIT'
-        ? "_Revisit Sensus Ekonomi 2026 - BPS Kota Manado_"
-        : "_Sensus Ekonomi 2026 - BPS Kota Manado_";
+    $lines[] = '_' . periode_label($d['periode']) . ' - BPS Kota Manado_';
     $lines[] = "";
     if (!empty($contact['dummy'])) {
         $lines[] = "Halo, pesan ini dikirim ke nomor cadangan karena nomor WA petugas berikut belum tersedia:";
